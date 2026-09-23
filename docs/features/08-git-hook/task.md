@@ -169,8 +169,8 @@ is not `cdd.config.yaml` at the top level, the last command carries
   `0755`.
 - Existing file whose first line is a shebang for `sh`, `bash` or `zsh`
   (any directory, `env` form included): insert the block after that first
-  line, with one blank line on each side, and set the executable bits
-  (`mode | 0o111`). The block goes at the top, not the end, because an
+  line, with one blank line on each side, and add the execute bit wherever
+  the read bit is set (`0644` becomes `0755`, `0700` stays `0700`). The block goes at the top, not the end, because an
   existing script that ends in `exit 0` would never reach an appended
   block.
 - Existing file without a shebang: insert the block at the top.
