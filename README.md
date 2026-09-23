@@ -8,6 +8,12 @@
 once. It scores every code unit in Intrinsic Complexity Points (ICPs) and
 flags the ones above the limit your team picked.
 
+CDD is based on Cognitive Load Theory: human working memory holds only a
+handful of items at a time, roughly seven, plus or minus two. Every
+construct a reader must track while reading a unit spends part of that
+budget, so CDD bounds each unit to what fits in one head. [docs/cdd.md](docs/cdd.md)
+lays out the theory in full.
+
 > The method comes from a 2020 ICSME paper:
 >
 > Tavares de Souza, A. L. O., Costa Pinto, V. H. S. 2020.
