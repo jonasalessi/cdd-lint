@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/jonasalessi/cdd-lint/internal/analyze"
 	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/git"
 	"github.com/jonasalessi/cdd-lint/internal/languages"
 	"github.com/jonasalessi/cdd-lint/internal/report"
 )
@@ -26,8 +28,19 @@ const (
 	exitTimeout = 2
 )
 
+// checkInput is what the flags and arguments of one "cdd check" ask for.
+type checkInput struct {
+	// args are the positional paths, empty for the whole tree.
+	args []string
+	// format overrides the configured reporter format when not empty.
+	format string
+	// staged replaces args with the files staged in git.
+	staged bool
+	opts   report.Options
+}
+
 func newCheckCmd() *cobra.Command {
-	var all, explain bool
+	var all, explain, staged bool
 	var format string
 	c := &cobra.Command{
 		Use:   "check [path...]",
@@ -61,6 +74,13 @@ report into inline hints.
 reporter.format. The destination still comes from the configuration, so a
 configured outputFile keeps receiving the report.
 
+--staged analyzes the files staged in git instead of the named paths, which
+is what the pre-commit hook of "cdd hook git" runs. Staged files outside the
+configuration's directory, files no configured language claims and files
+the patterns exclude are left out, and when nothing remains the command
+prints nothing and exits 0. The working-tree content is analyzed, so a
+partially staged file is judged on edits that are not in the commit.
+
 Exit codes:
 
   0  no unit is above its limit, or the enforcement only reports them
@@ -69,10 +89,14 @@ Exit codes:
   2  the timeout elapsed; the printed report covers the files analyzed in time`,
 		Args: cobra.ArbitraryArgs,
 		RunE: func(c *cobra.Command, args []string) error {
-			return runCheck(c, configPath, args, format, report.Options{All: all, Explain: explain})
+			return runCheck(c, configPath, checkInput{
+				args: args, format: format, staged: staged,
+				opts: report.Options{All: all, Explain: explain},
+			})
 		},
 	}
 	c.Flags().BoolVar(&all, "all", false, "list every unit, not only the ones over their limit")
+	c.Flags().BoolVar(&staged, "staged", false, "analyze the files staged in git instead of the named paths")
 	c.Flags().BoolVar(&explain, "explain", false, "list every counted construct with its position and ICPs")
 	c.Flags().StringVar(&format, "format", "",
 		"report format, overriding reporter.format: "+strings.Join(config.ReporterFormats(), ", "))
@@ -81,33 +105,40 @@ Exit codes:
 
 // runCheck implements cdd check: load the configuration, analyze the tree it
 // governs, or the paths under it, report the outcome and turn it into an
-// exit code. A non-empty format replaces the configured reporter.format.
-func runCheck(c *cobra.Command, path string, args []string, format string, opts report.Options) error {
-	if err := validateFormat(format); err != nil {
+// exit code. A staged run with nothing to analyze ends silently.
+func runCheck(c *cobra.Command, path string, in checkInput) error {
+	if err := validateFormat(in.format); err != nil {
 		return err
 	}
 	root := filepath.Dir(path)
-	paths, err := checkPaths(root, args)
+	paths, err := selectPaths(c.Context(), root, in)
 	if err != nil {
 		return err
+	}
+	if in.staged && len(paths) == 0 {
+		return nil
 	}
 	cfg, err := loadCheckConfig(c, path)
 	if err != nil {
 		return err
 	}
-	if format != "" {
-		cfg.Reporter.Format = format
+	if in.format != "" {
+		cfg.Reporter.Format = in.format
 	}
 	res, runErr := analyze.Run(c.Context(), analyze.Request{
-		Root:      root,
-		Config:    cfg,
-		Languages: languages.All(),
-		Paths:     paths,
+		Root:          root,
+		Config:        cfg,
+		Languages:     languages.All(),
+		Paths:         paths,
+		SkipUnclaimed: in.staged,
 	})
 	if runErr != nil && !errors.Is(runErr, analyze.ErrTimeout) {
 		return runErr
 	}
-	if err := emitReport(c, cfg.Reporter, res, opts); err != nil {
+	if in.staged && runErr == nil && len(res.Files) == 0 {
+		return nil
+	}
+	if err := emitReport(c, cfg.Reporter, res, in.opts); err != nil {
 		return err
 	}
 	if runErr != nil {
@@ -125,6 +156,68 @@ func validateFormat(format string) error {
 		return nil
 	}
 	return fmt.Errorf("--format: %q is not one of %s", format, strings.Join(config.ReporterFormats(), ", "))
+}
+
+// selectPaths resolves the files of the run: the staged ones when --staged
+// was given, the positional arguments otherwise. Both at once is a
+// contradiction the command refuses.
+func selectPaths(ctx context.Context, root string, in checkInput) ([]string, error) {
+	if !in.staged {
+		return checkPaths(root, in.args)
+	}
+	if len(in.args) > 0 {
+		return nil, errors.New("--staged takes no paths")
+	}
+	return stagedPaths(ctx, root)
+}
+
+// stagedPaths lists the staged files under root as slash-separated paths
+// relative to it. Git names them relative to the top level, so they are
+// resolved through it; a staged file elsewhere in the repository belongs to
+// another project and is dropped.
+func stagedPaths(ctx context.Context, root string) ([]string, error) {
+	top, err := git.Toplevel(ctx, ".")
+	if err != nil {
+		return nil, err
+	}
+	names, err := git.Staged(ctx, ".")
+	if err != nil {
+		return nil, err
+	}
+	absRoot, err := resolvedAbs(root)
+	if err != nil {
+		return nil, err
+	}
+	var paths []string
+	for _, name := range names {
+		if rel, ok := relativeTo(absRoot, filepath.Join(top, filepath.FromSlash(name))); ok {
+			paths = append(paths, filepath.ToSlash(rel))
+		}
+	}
+	return paths, nil
+}
+
+// resolvedAbs makes path absolute and follows symlinks when it exists, so
+// it compares with the top level git prints, which is symlink-free.
+func resolvedAbs(path string) (string, error) {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	if resolved, err := filepath.EvalSymlinks(abs); err == nil {
+		return resolved, nil
+	}
+	return abs, nil
+}
+
+// relativeTo returns target relative to dir, and false when target is not
+// under dir.
+func relativeTo(dir, target string) (string, bool) {
+	rel, err := filepath.Rel(dir, target)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return "", false
+	}
+	return rel, true
 }
 
 // checkPaths turns the paths given on the command line, relative to the
