@@ -4,14 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/jonasalessi/cdd-lint/internal/config"
-	"github.com/jonasalessi/cdd-lint/internal/detect"
 )
 
 // candidate is one file the walk selected: its slash-separated path
@@ -100,40 +98,4 @@ func (p *plan) file(rel string) (candidate, error) {
 		return candidate{}, ineligibleError{fmt.Sprintf("%s is excluded by the configuration", rel)}
 	}
 	return candidate{path: rel, lang: lang}, nil
-}
-
-// walk descends from start, which is root or a directory under it, and
-// returns every file the run analyzes, with paths relative to root.
-// Directories detect.SkipDir names, including version control and build
-// output, are never entered unless start itself is one: the caller asked for
-// it. A canceled context ends the walk with what it found so far, because Run
-// turns that into a partial result rather than an error.
-func (p *plan) walk(ctx context.Context, root, start string) ([]candidate, error) {
-	var found []candidate
-	err := filepath.WalkDir(start, func(path string, entry fs.DirEntry, err error) error {
-		if ctxErr := ctx.Err(); ctxErr != nil {
-			return ctxErr
-		}
-		if err != nil {
-			return err
-		}
-		if entry.IsDir() {
-			if path != start && detect.SkipDir(entry.Name()) {
-				return filepath.SkipDir
-			}
-			return nil
-		}
-		rel, err := filepath.Rel(root, path)
-		if err != nil {
-			return err
-		}
-		if c, err := p.file(filepath.ToSlash(rel)); err == nil {
-			found = append(found, c)
-		}
-		return nil
-	})
-	if err != nil && !stoppedEarly(err) {
-		return nil, fmt.Errorf("walk %s: %w", start, err)
-	}
-	return found, nil
 }
