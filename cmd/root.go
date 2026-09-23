@@ -37,7 +37,7 @@ to measure it.`,
 	c.PersistentFlags().StringVar(&configPath, "config", defaultConfigPath, "path to the cdd configuration file")
 	c.Version = versionLine()
 	c.SetVersionTemplate("{{.Version}}\n")
-	c.AddCommand(newVersionCmd(), newInitCmd(), newCheckCmd())
+	c.AddCommand(newVersionCmd(), newInitCmd(), newCheckCmd(), newHookCmd())
 	return c
 }
 

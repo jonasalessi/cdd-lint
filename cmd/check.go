@@ -197,17 +197,24 @@ func stagedPaths(ctx context.Context, root string) ([]string, error) {
 	return paths, nil
 }
 
-// resolvedAbs makes path absolute and follows symlinks when it exists, so
-// it compares with the top level git prints, which is symlink-free.
+// resolvedAbs makes path absolute and follows the symlinks of its longest
+// existing prefix, so it compares with the paths git prints, which are
+// symlink-free, even when the path itself does not exist yet.
 func resolvedAbs(path string) (string, error) {
 	abs, err := filepath.Abs(path)
 	if err != nil {
 		return "", err
 	}
-	if resolved, err := filepath.EvalSymlinks(abs); err == nil {
-		return resolved, nil
+	var rest []string
+	for dir := abs; ; dir = filepath.Dir(dir) {
+		if resolved, err := filepath.EvalSymlinks(dir); err == nil {
+			return filepath.Join(append([]string{resolved}, rest...)...), nil
+		}
+		if filepath.Dir(dir) == dir {
+			return abs, nil
+		}
+		rest = append([]string{filepath.Base(dir)}, rest...)
 	}
-	return abs, nil
 }
 
 // relativeTo returns target relative to dir, and false when target is not
