@@ -89,8 +89,10 @@ type plan struct {
 	languages  map[config.Language]languagePlan
 	byExt      map[string]config.Language
 	matcher    *matcher
-	timeout    time.Duration
-	warnings   []string
+	// skipUnclaimed is Request.SkipUnclaimed.
+	skipUnclaimed bool
+	timeout       time.Duration
+	warnings      []string
 }
 
 // newPlan indexes the configured registry metadata needed to collect
@@ -101,6 +103,8 @@ func newPlan(req Request) (*plan, error) {
 		byExt:     make(map[string]config.Language),
 		timeout:   req.Config.Timeout,
 		warnings:  enforcementWarnings(req.Config.Enforcement),
+
+		skipUnclaimed: req.SkipUnclaimed,
 	}
 	if err := p.indexConfigured(req); err != nil {
 		return nil, err
