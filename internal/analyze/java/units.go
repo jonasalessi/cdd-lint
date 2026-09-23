@@ -3,7 +3,7 @@ package java
 import (
 	ts "github.com/tree-sitter/go-tree-sitter"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
 )
 
 // The Kind values a Java unit can carry. Unlike Kotlin, this grammar has one

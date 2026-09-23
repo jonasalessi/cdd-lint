@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // span returns a one-character range on the given line, enough to tell two

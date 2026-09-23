@@ -1,4 +1,4 @@
-# cdd-cli
+# cdd-lint
 
 CLI (`cdd`) that measures code quality with Cognitive-Driven Development (CDD)
 and Intrinsic Complexity Points (ICPs). Written in Go, idiomatic per

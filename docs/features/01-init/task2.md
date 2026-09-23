@@ -156,7 +156,7 @@ Flag → field mapping exactly as `draft.md` §6.3; `--weight id=value` parsed i
 
 ## T6 · Dogfood
 
-`cdd init --yes --force --languages go --packages github.com/your-org/cdd-cli` at repo root; `git diff --exit-code cdd.config.yaml` must be empty against the Task 1 hand-written file. Add this as a CI step.
+`cdd init --yes --force --languages go --packages github.com/your-org/cdd-lint` at repo root; `git diff --exit-code cdd.config.yaml` must be empty against the Task 1 hand-written file. Add this as a CI step.
 
 ## T7 · Docs
 

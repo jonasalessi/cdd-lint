@@ -13,8 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // brokenFixture is the only fixture that does not parse; every other one is

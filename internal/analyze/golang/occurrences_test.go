@@ -14,9 +14,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // extText keeps a fixture out of the toolchain's reach: broken.go.txt holds

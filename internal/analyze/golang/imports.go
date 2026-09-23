@@ -9,8 +9,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // The two import names that bind nothing a reference can name: a dot import

@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // ErrExists reports that the target file is already there and force was not

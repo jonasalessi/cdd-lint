@@ -4,9 +4,9 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // counter accumulates the raw ICP counts of one unit while the subtrees it

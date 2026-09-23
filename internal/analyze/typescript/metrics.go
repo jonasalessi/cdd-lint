@@ -3,9 +3,9 @@ package typescript
 import (
 	ts "github.com/tree-sitter/go-tree-sitter"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // The logical operators that make a Boolean clause.

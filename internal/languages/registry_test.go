@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // analyzeDir is the directory every language lives under, relative to this

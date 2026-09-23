@@ -13,9 +13,9 @@ import (
 
 	"github.com/charmbracelet/huh"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
-	"github.com/jonasalessi/cdd-cli/internal/detect"
-	"github.com/jonasalessi/cdd-cli/internal/initcmd"
+	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/detect"
+	"github.com/jonasalessi/cdd-lint/internal/initcmd"
 )
 
 // ErrAborted is returned when the user cancels the interview with ctrl-c.

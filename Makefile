@@ -9,9 +9,9 @@ GOLANGCI_LINT = bin/golangci-lint
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo none)
 DATE    ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
-LDFLAGS  = -X github.com/jonasalessi/cdd-cli/cmd.version=$(VERSION) \
-           -X github.com/jonasalessi/cdd-cli/cmd.commit=$(COMMIT) \
-           -X github.com/jonasalessi/cdd-cli/cmd.date=$(DATE)
+LDFLAGS  = -X github.com/jonasalessi/cdd-lint/cmd.version=$(VERSION) \
+           -X github.com/jonasalessi/cdd-lint/cmd.commit=$(COMMIT) \
+           -X github.com/jonasalessi/cdd-lint/cmd.date=$(DATE)
 
 ## setup: configure the local clone (installs the git hooks in .githooks)
 setup:

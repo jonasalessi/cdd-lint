@@ -7,7 +7,7 @@ package initcmd
 import (
 	"time"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // Answers collects everything the interview or the flags decide. The zero

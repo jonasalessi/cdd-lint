@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/languages"
+	"github.com/jonasalessi/cdd-lint/internal/languages"
 )
 
 // goAppDir is where the Go fixtures put their sources, one package below the

@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // ErrTooFewMetrics reports a language left with fewer applicable metrics

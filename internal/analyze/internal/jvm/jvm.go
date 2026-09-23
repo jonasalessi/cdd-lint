@@ -19,7 +19,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/jonasalessi/cdd-cli/internal/detect"
+	"github.com/jonasalessi/cdd-lint/internal/detect"
 )
 
 // maxFiles caps how many sources Prefixes reads before it settles on the

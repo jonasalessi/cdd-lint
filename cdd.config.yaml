@@ -117,7 +117,7 @@ reporter:
 internal_coupling:
   auto_detect: true
   packages:
-    - "github.com/jonasalessi/cdd-cli"
+    - "github.com/jonasalessi/cdd-lint"
 
 # -----------------------------------------------------------------------------
 # FILE FILTERING

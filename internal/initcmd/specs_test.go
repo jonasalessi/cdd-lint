@@ -3,7 +3,7 @@ package initcmd
 import (
 	"context"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // Synthetic languages. alpha cannot count exceptions or inheritance; beta

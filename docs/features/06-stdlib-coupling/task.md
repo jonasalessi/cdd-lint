@@ -328,7 +328,7 @@ consequence, visible. Repeat on `internal/analyze/kotlin/testdata/coupling.kt`
 (line 5 stdlib, line 6 `kotlinx` external) and
 `internal/analyze/typescript/testdata/coupling.ts` (`node:fs/promises` stdlib,
 `lodash/fp` external). Finish with `cdd init --yes --force --languages go
---packages github.com/jonasalessi/cdd-cli` at the root and
+--packages github.com/jonasalessi/cdd-lint` at the root and
 `git diff --exit-code`, which is what the CI dogfood gate runs.
 
 ## Definition of done

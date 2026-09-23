@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
 )
 
 // unitHead is the identity of a unit, without its counts.

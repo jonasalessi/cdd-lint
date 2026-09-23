@@ -3,8 +3,8 @@ package java
 import (
 	ts "github.com/tree-sitter/go-tree-sitter"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/jvm"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/jvm"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
 )
 
 // modules returns the modules imported by the file, in source order (FR-6,

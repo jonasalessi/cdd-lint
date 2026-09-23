@@ -4,7 +4,7 @@ import (
 	"cmp"
 	"slices"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
 )
 
 // SortOccurrences orders occurrences by position, in place. A walk yields

@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // Analyzer counts the ICP constructs of one source file. Implementations

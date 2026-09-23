@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/languages"
+	"github.com/jonasalessi/cdd-lint/internal/languages"
 )
 
 // kotlinAppDir is where the Kotlin fixtures put their sources, laid out the

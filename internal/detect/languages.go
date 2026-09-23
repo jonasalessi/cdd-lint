@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // skipDirs are directory names never worth scanning: VCS metadata,

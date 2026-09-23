@@ -8,8 +8,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/jvm"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/jvm"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // extJava is the one extension the analyzer reads.

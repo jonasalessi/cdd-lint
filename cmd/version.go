@@ -9,7 +9,7 @@ import (
 )
 
 // Build information, injected by the Makefile through -ldflags -X. A build
-// without them, such as "go install github.com/jonasalessi/cdd-cli@latest",
+// without them, such as "go install github.com/jonasalessi/cdd-lint@latest",
 // keeps these defaults and falls back to what the Go tool stamps into the
 // binary.
 var (

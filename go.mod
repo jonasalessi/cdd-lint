@@ -1,4 +1,4 @@
-module github.com/jonasalessi/cdd-cli
+module github.com/jonasalessi/cdd-lint
 
 go 1.25.0
 
