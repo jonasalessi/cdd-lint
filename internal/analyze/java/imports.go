@@ -84,7 +84,7 @@ func importBinding(g *grammar, name *ts.Node, src []byte) string {
 func (c *counter) countCoupling(mods []jvm.Module) {
 	for i := range mods {
 		m := &mods[i]
-		if m.UsedBy(c.refs) {
+		if m.UsedBy(c.decls.refs) {
 			c.chargeSpan(m.Metric, m.At)
 		}
 	}
