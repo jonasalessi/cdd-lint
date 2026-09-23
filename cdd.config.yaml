@@ -83,7 +83,7 @@ icp-limits:
 #   measure_only       - report only; forces block_on_ci: false
 enforcement:
   block_on_ci: true
-  legacy_mode: strict_on_new_only
+  legacy_mode: strict_all
   # target_limit: 8                   # optional goal for progressive tightening
 
 # -----------------------------------------------------------------------------
