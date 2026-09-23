@@ -80,15 +80,16 @@ cases are checked-in, passing tests.
 ### FR-1 — `internal/git`: the git runner
 
 One package owns every call to the `git` binary. It runs `git` with the
-working directory it is given and never changes the process's own.
+working directory it is given, under the caller's context, and never
+changes the process's own.
 
-- `Toplevel(dir string) (string, error)` — `git rev-parse --show-toplevel`,
+- `Toplevel(ctx, dir string) (string, error)` — `git rev-parse --show-toplevel`,
   returned as a cleaned absolute path.
-- `HooksDir(dir string) (string, error)` — `git rev-parse --git-path hooks`,
+- `HooksDir(ctx, dir string) (string, error)` — `git rev-parse --git-path hooks`,
   made absolute against `dir` when git prints it relative. This honours
   `core.hooksPath`, linked worktrees and submodules, which a literal
   `.git/hooks` does not.
-- `Staged(dir string) ([]string, error)` —
+- `Staged(ctx, dir string) ([]string, error)` —
   `git diff --cached --name-only --diff-filter=ACMR -z`, split on NUL, each
   entry slash-separated and relative to the top level, in git's order.
   `--diff-filter=ACMR` leaves deleted files out; a rename yields its new
