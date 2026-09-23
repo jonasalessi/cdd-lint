@@ -160,7 +160,7 @@ README.md                        "Adding a language" section
   `cmd/init.go`. Delete `detect.Packages`, the seven tables, and the global
   accessors listed in FR-5. The compiler drives this task.
   *Accept:* `make build`; `cmd/` goldens unchanged; `./bin/cdd init --yes
-  --force --languages go --packages github.com/jonasalessi/cdd-cli && git
+  --force --languages go --packages github.com/jonasalessi/cdd-lint && git
   diff --exit-code cdd.config.yaml` clean.
 
 - **T5 — Golden isolation.** Convert `internal/config` tests to synthetic

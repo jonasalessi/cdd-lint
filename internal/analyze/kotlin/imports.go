@@ -5,8 +5,8 @@ import (
 
 	ts "github.com/tree-sitter/go-tree-sitter"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/jvm"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/jvm"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
 )
 
 // stdlibPrefix is the package tree the language's own standard library

@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // moduleRoot is the repository root relative to this package.
@@ -158,7 +158,7 @@ func inspect(fset *token.FileSet, file *ast.File, rel string, forbidden map[stri
 	return out
 }
 
-const analyzerImportPrefix = "github.com/jonasalessi/cdd-cli/internal/analyze/"
+const analyzerImportPrefix = "github.com/jonasalessi/cdd-lint/internal/analyze/"
 
 // forbiddenConcreteAnalyzerImport reports whether rel imports a concrete
 // language analyzer outside the registry or that analyzer's own directory.
@@ -222,20 +222,20 @@ func TestInspectRejectsConcreteAnalyzerImportsOutsideTheirBoundaries(t *testing.
 	}{
 		"command cannot import a concrete analyzer": {
 			rel:        "cmd/check.go",
-			importPath: "github.com/jonasalessi/cdd-cli/internal/analyze/typescript",
+			importPath: "github.com/jonasalessi/cdd-lint/internal/analyze/typescript",
 			violation:  true,
 		},
 		"registry can import a concrete analyzer": {
 			rel:        "internal/languages/languages.go",
-			importPath: "github.com/jonasalessi/cdd-cli/internal/analyze/typescript",
+			importPath: "github.com/jonasalessi/cdd-lint/internal/analyze/typescript",
 		},
 		"analyzer can import its own package": {
 			rel:        "internal/analyze/typescript/helper.go",
-			importPath: "github.com/jonasalessi/cdd-cli/internal/analyze/typescript",
+			importPath: "github.com/jonasalessi/cdd-lint/internal/analyze/typescript",
 		},
 		"other analyzers cannot import a concrete analyzer": {
 			rel:        "internal/analyze/java/helper.go",
-			importPath: "github.com/jonasalessi/cdd-cli/internal/analyze/typescript",
+			importPath: "github.com/jonasalessi/cdd-lint/internal/analyze/typescript",
 			violation:  true,
 		},
 	}

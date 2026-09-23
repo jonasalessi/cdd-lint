@@ -13,9 +13,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
-	"github.com/jonasalessi/cdd-cli/internal/initcmd"
-	"github.com/jonasalessi/cdd-cli/internal/languages"
+	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/initcmd"
+	"github.com/jonasalessi/cdd-lint/internal/languages"
 )
 
 // update rewrites command-output golden files.
@@ -87,7 +87,7 @@ func TestInitDogfoodConfigReproducible(t *testing.T) {
 	dir := t.TempDir()
 	_, stderr, code := runCdd(t, dir, "init", "--yes",
 		"--languages", "go",
-		"--packages", "github.com/jonasalessi/cdd-cli",
+		"--packages", "github.com/jonasalessi/cdd-lint",
 	)
 	require.Equal(t, 0, code, "stderr: %s", stderr)
 	got, err := os.ReadFile(filepath.Join(dir, "cdd.config.yaml"))

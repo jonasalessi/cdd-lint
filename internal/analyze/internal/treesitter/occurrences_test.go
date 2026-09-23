@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
 )
 
 // TestSortOccurrences orders by line then column and keeps the order of

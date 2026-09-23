@@ -6,8 +6,8 @@ import (
 
 	ts "github.com/tree-sitter/go-tree-sitter"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/treesitter"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
 )
 
 // analyzer counts the TypeScript ICP constructs of one file at a time. It

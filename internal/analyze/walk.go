@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
-	"github.com/jonasalessi/cdd-cli/internal/detect"
+	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/detect"
 )
 
 // candidate is one file the walk selected: its slash-separated path

@@ -48,7 +48,7 @@ pure functions and the parsers are cheap.
 | TC-V8 | integration | `cdd init` output for a fresh project. | The generated `cdd.config.yaml` has no `stdlib_coupling` key under any language, and its vocabulary comment block lists `stdlib_coupling 0.5 all standard library types (optional, off by default)` between the external and inheritance rows. Column alignment is unchanged — `exception_handling: 1.0` is still the widest entry. |
 | TC-V9 | integration | Golden regeneration. | `go test ./internal/config -update` and `go test ./cmd -run 'TestInitTypeScriptMatchesGolden\|TestInitDogfoodConfigReproducible' -update` leave a clean tree on a second run. `cmd/testdata/golden/greenfield-java-kotlin.yaml` and `docs/features/01-init/config-template.yaml` have no `-update` branch and are hand-edited to match. |
 | TC-V10 | integration | `cdd init --metrics …,stdlib_coupling` and `--weight stdlib_coupling=0.75`. | Both accepted with no change to `internal/initcmd`: the flags already validate through `config.IsMetric`. The written file carries the metric at the given weight. |
-| TC-V11 | integration | The repository's own `cdd.config.yaml` after `cdd init --yes --force --languages go --packages github.com/jonasalessi/cdd-cli`. | `git diff --exit-code` clean — the CI dogfood gate. |
+| TC-V11 | integration | The repository's own `cdd.config.yaml` after `cdd init --yes --force --languages go --packages github.com/jonasalessi/cdd-lint`. | `git diff --exit-code` clean — the CI dogfood gate. |
 
 ## T2 — Classifying JVM imports into a metric (FR-2)
 

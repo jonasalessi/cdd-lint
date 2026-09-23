@@ -7,9 +7,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
-	"github.com/jonasalessi/cdd-cli/internal/detect"
-	"github.com/jonasalessi/cdd-cli/internal/initcmd"
+	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/detect"
+	"github.com/jonasalessi/cdd-lint/internal/initcmd"
 )
 
 func TestValidateLimit(t *testing.T) {

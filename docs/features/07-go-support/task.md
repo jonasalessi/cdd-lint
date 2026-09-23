@@ -805,7 +805,7 @@ rm cdd.config.yaml
 Dogfood gate, what CI runs, from the repository root:
 
 ```sh
-./bin/cdd init --yes --force --languages go --packages github.com/jonasalessi/cdd-cli
+./bin/cdd init --yes --force --languages go --packages github.com/jonasalessi/cdd-lint
 git diff --exit-code
 ./bin/cdd check --all          # smoke: zero syntax warnings over this repository
 ```

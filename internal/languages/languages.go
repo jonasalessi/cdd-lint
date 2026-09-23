@@ -6,12 +6,12 @@
 package languages
 
 import (
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/golang"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/java"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/kotlin"
-	"github.com/jonasalessi/cdd-cli/internal/analyze/typescript"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/golang"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/java"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/kotlin"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/typescript"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // All returns every supported language in registration order, which is the

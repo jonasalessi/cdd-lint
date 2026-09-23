@@ -19,8 +19,8 @@ A repository that builds, lints and tests cleanly, with every CLI entrypoint wir
 ## Deliverables (file by file)
 
 ```
-cdd-cli/
-├── go.mod / go.sum                  # module github.com/your-org/cdd-cli  (rename before commit)
+cdd-lint/
+├── go.mod / go.sum                  # module github.com/your-org/cdd-lint  (rename before commit)
 ├── main.go
 ├── Makefile                         # build · test · lint · fmt · cover
 ├── .golangci.yml
@@ -51,7 +51,7 @@ Dependencies added in this round: `github.com/spf13/cobra`, `gopkg.in/yaml.v3`, 
 
 ## T1 · Repository & toolchain
 
-1. `go mod init github.com/your-org/cdd-cli` (Go ≥ 1.23).
+1. `go mod init github.com/your-org/cdd-lint` (Go ≥ 1.23).
 2. `Makefile` targets: `build` (→ `bin/cdd`, `-ldflags` injecting `version`, `commit`, `date`), `test` (`go test ./... -race`), `cover` (`-coverprofile` + `go tool cover -func`), `lint` (`golangci-lint run`), `fmt` (`gofmt -l -w .`).
 3. `.golangci.yml`: `gofmt`, `govet`, `errcheck`, `staticcheck`, `unused`, `revive`.
 4. `.github/workflows/ci.yml`: on push/PR → setup-go, `make lint`, `make test`.
@@ -165,7 +165,7 @@ Constants for every id/mode string (`MetricCodeBranch`, `ProjectGreenfield`, `Mo
 
 ## T7 · Dogfood placeholder
 
-- Commit `cdd.config.yaml` at repo root: `go`, greenfield, limit 10, metrics `code_branch, condition, internal_coupling, external_coupling` (the four applicable defaults), `timeout: 5m`, packages `["github.com/your-org/cdd-cli"]`, excludes `**/*_test.go, vendor/**`.
+- Commit `cdd.config.yaml` at repo root: `go`, greenfield, limit 10, metrics `code_branch, condition, internal_coupling, external_coupling` (the four applicable defaults), `timeout: 5m`, packages `["github.com/your-org/cdd-lint"]`, excludes `**/*_test.go, vendor/**`.
 - Produce it with a small test helper (`go test -run TestWriteDogfood -update`) or by hand-copying golden output — it must be **byte-identical** to `Render` of the equivalent `Config`; add a test asserting that so Round 2's `cdd init --force` diff-clean check has a stable baseline.
 
 ---

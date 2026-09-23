@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"github.com/jonasalessi/cdd-cli/cmd"
+	"github.com/jonasalessi/cdd-lint/cmd"
 )
 
 func main() {

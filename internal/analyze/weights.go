@@ -5,7 +5,7 @@ import (
 	"maps"
 	"regexp"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // weights are the metric weights one language configures, pattern by

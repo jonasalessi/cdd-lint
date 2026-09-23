@@ -12,11 +12,11 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/jonasalessi/cdd-cli/internal/config"
-	"github.com/jonasalessi/cdd-cli/internal/detect"
-	"github.com/jonasalessi/cdd-cli/internal/initcmd"
-	"github.com/jonasalessi/cdd-cli/internal/languages"
-	"github.com/jonasalessi/cdd-cli/internal/prompt"
+	"github.com/jonasalessi/cdd-lint/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/detect"
+	"github.com/jonasalessi/cdd-lint/internal/initcmd"
+	"github.com/jonasalessi/cdd-lint/internal/languages"
+	"github.com/jonasalessi/cdd-lint/internal/prompt"
 )
 
 // exitCtrlC is the conventional exit code for a run ended by ctrl-c.

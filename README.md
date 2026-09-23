@@ -1,12 +1,18 @@
 # CDD CLI: Cognitive-Driven Development Analyzer
 
-[![CI](https://github.com/jonasalessi/cdd-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jonasalessi/cdd-cli/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/jonasalessi/cdd-cli/graph/badge.svg)](https://codecov.io/gh/jonasalessi/cdd-cli)
+[![CI](https://github.com/jonasalessi/cdd-lint/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jonasalessi/cdd-lint/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/jonasalessi/cdd-lint/graph/badge.svg)](https://codecov.io/gh/jonasalessi/cdd-lint)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 `cdd` measures how much of your code a reader has to hold in their head at
 once. It scores every code unit in Intrinsic Complexity Points (ICPs) and
 flags the ones above the limit your team picked.
+
+CDD is based on Cognitive Load Theory: human working memory holds only a
+handful of items at a time, roughly seven, plus or minus two. Every
+construct a reader must track while reading a unit spends part of that
+budget, so CDD bounds each unit to what fits in one head. [docs/cdd.md](docs/cdd.md)
+lays out the theory in full.
 
 > The method comes from a 2020 ICSME paper:
 >
@@ -28,7 +34,7 @@ somewhere between 20 and 40, and comes down as the code improves.
 ## Installation
 
 ```sh
-go install github.com/jonasalessi/cdd-cli@latest
+go install github.com/jonasalessi/cdd-lint@latest
 ```
 
 That build needs Go 1.25 or newer and a C compiler. The TypeScript, Kotlin
@@ -237,7 +243,7 @@ and every known limitation are in [docs/languages.md](docs/languages.md).
 
 ## Support
 
-Bugs and feature requests go in the [issue tracker](https://github.com/jonasalessi/cdd-cli/issues).
+Bugs and feature requests go in the [issue tracker](https://github.com/jonasalessi/cdd-lint/issues).
 
 ## Contributing
 

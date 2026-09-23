@@ -8,8 +8,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze/internal/jvm"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/jvm"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // extKotlin is the one extension the analyzer reads. Kotlin scripts (.kts)

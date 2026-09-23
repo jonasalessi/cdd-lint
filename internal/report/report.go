@@ -13,8 +13,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jonasalessi/cdd-cli/internal/analyze"
-	"github.com/jonasalessi/cdd-cli/internal/config"
+	"github.com/jonasalessi/cdd-lint/internal/analyze"
+	"github.com/jonasalessi/cdd-lint/internal/config"
 )
 
 // outputFileMode is the permission of a report written to a file. A report

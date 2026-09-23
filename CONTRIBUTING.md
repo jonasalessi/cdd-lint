@@ -1,4 +1,4 @@
-# Contributing to cdd-cli
+# Contributing to cdd-lint
 
 ## Run the setup first
 
@@ -78,7 +78,7 @@ kept by hand; step 4 lists them.
    ```go
    package rust
 
-   import "github.com/jonasalessi/cdd-cli/internal/config"
+   import "github.com/jonasalessi/cdd-lint/internal/config"
 
    func Spec() config.LanguageSpec {
        return config.LanguageSpec{
