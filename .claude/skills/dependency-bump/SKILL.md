@@ -68,7 +68,7 @@ bisect in a scratch worktree and express the result as a pin.
 
 ```sh
 git add go.mod go.sum   # or the workflow file
-git commit -m "build: bump <module> to <version> and <module> to <version>"
+git commit -m "build: #A #B bump <module> to <version> and <module> to <version>"
 git push -u origin build/bump-deps
 gh pr create --base main --title "build: bump dependencies" --body "Closes #A
 Closes #B"

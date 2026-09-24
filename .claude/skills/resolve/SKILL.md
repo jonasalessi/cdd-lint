@@ -51,7 +51,7 @@ git switch -c "issue/$N-<slug>" main
 Write `docs/features/<nn>-<name>/task.md` and `test-cases.md` in the shape
 of the existing ones: a goal, the verified current state with file and line
 references, scope in and out, numbered `FR-n` requirements, and one `TC-`
-case per constraint. Commit it as `docs: add <name> feature spec`. Then
+case per constraint. Commit it as `docs: #N add <name> feature spec`. Then
 resolve one `FR-n` per commit.
 
 ### 3. Test first
@@ -88,8 +88,8 @@ changes. Update the README, `docs/languages.md` or
 
 ### 6. Gate, then push
 
-Commit in `<type>: <description>` form, one sentence per commit, no
-trailers. Run `make check` as its own step and read its exit code before
+Commit in `<type>: #N <description>` form, naming the issue right after
+the type, one sentence per commit, no trailers. Run `make check` as its own step and read its exit code before
 anything depends on it; never chain the gate with the push. Then:
 
 ```sh
