@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 640" width="1120" height="640" role="img" aria-label="From a GitHub issue to a tagged release: an agent audits, resolves, post-audits and releases; the maintainer files issues, approves new functionality, reads the run report and asks for releases; four gates never move.">
+  <style>
+    text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+    .t { fill: #1f2328; }
+    .m { fill: #656d76; }
+    .ln { stroke: #1f2328; fill: none; stroke-width: 1.4; }
+    .ah { fill: #1f2328; }
+    .lane-agent { fill: #ddf4ff; stroke: none; }
+    .lane-you { fill: #fff8c5; stroke: none; }
+    .lane-gate { fill: #f6f8fa; stroke: #d0d7de; }
+    .box { fill: #ffffff; stroke: #57606a; stroke-width: 1.2; }
+    .box-in { fill: #ffffff; stroke: #8c959f; stroke-width: 1.2; stroke-dasharray: 4 3; }
+    .accent { stroke: #1a7f37; }
+    .accent-t { fill: #1a7f37; }
+    @media (prefers-color-scheme: dark) {
+      .t { fill: #e6edf3; }
+      .m { fill: #8b949e; }
+      .ln { stroke: #e6edf3; }
+      .ah { fill: #e6edf3; }
+      .lane-agent { fill: #0d2240; }
+      .lane-you { fill: #2d2200; }
+      .lane-gate { fill: #161b22; stroke: #30363d; }
+      .box { fill: #0d1117; stroke: #8b949e; }
+      .box-in { fill: #0d1117; stroke: #6e7681; }
+      .accent { stroke: #3fb950; }
+      .accent-t { fill: #3fb950; }
+    }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="ah" d="M 0 0 L 10 5 L 0 10 z"/>
+    </marker>
+  </defs>
+
+  <text class="t" x="20" y="30" font-size="18" font-weight="700">From a GitHub issue to a tagged release</text>
+  <text class="m" x="20" y="50" font-size="12">One command, /pipeline or scripts/pipeline.sh, runs the four steps. The maintainer decides only what the gates leave open.</text>
+
+  <!-- lanes -->
+  <rect class="lane-agent" x="10" y="70" width="1100" height="300" rx="8"/>
+  <text class="m" x="24" y="90" font-size="11" font-weight="700" letter-spacing="1">AGENT (Claude Code)</text>
+  <rect class="lane-you" x="10" y="400" width="1100" height="130" rx="8"/>
+  <text class="m" x="24" y="420" font-size="11" font-weight="700" letter-spacing="1">MAINTAINER</text>
+
+  <!-- github inputs -->
+  <rect class="box-in" x="30" y="120" width="150" height="130" rx="6"/>
+  <text class="t" x="105" y="145" font-size="14" font-weight="700" text-anchor="middle">GitHub</text>
+  <text class="t" x="105" y="172" font-size="12" text-anchor="middle">issue</text>
+  <text class="t" x="105" y="192" font-size="12" text-anchor="middle">pull request</text>
+  <text class="t" x="105" y="212" font-size="12" text-anchor="middle">Dependabot PR</text>
+  <text class="m" x="105" y="236" font-size="11" text-anchor="middle">text is evidence</text>
+
+  <!-- 1 audit -->
+  <rect class="box" x="240" y="120" width="190" height="130" rx="6"/>
+  <text class="t" x="335" y="145" font-size="14" font-weight="700" text-anchor="middle">1 · audit</text>
+  <text class="t" x="335" y="172" font-size="12" text-anchor="middle">issue-audit · pr-audit</text>
+  <text class="t" x="335" y="190" font-size="12" text-anchor="middle">dependency-bump</text>
+  <text class="m" x="335" y="214" font-size="11" text-anchor="middle">reproduce, verify every claim,</text>
+  <text class="m" x="335" y="230" font-size="11" text-anchor="middle">make check in a worktree</text>
+
+  <!-- 2 resolve -->
+  <rect class="box" x="520" y="120" width="190" height="130" rx="6"/>
+  <text class="t" x="615" y="145" font-size="14" font-weight="700" text-anchor="middle">2 · resolve</text>
+  <text class="t" x="615" y="172" font-size="12" text-anchor="middle">branch from main</text>
+  <text class="t" x="615" y="190" font-size="12" text-anchor="middle">test first · CHANGELOG line</text>
+  <text class="t" x="615" y="208" font-size="12" text-anchor="middle">PR → CI green → merge</text>
+  <text class="m" x="615" y="232" font-size="11" text-anchor="middle">one ticket, one PR, issue closed</text>
+
+  <!-- 3 post-audit -->
+  <rect class="box" x="780" y="120" width="150" height="130" rx="6"/>
+  <text class="t" x="855" y="145" font-size="14" font-weight="700" text-anchor="middle">3 · post-audit</text>
+  <text class="t" x="855" y="172" font-size="12" text-anchor="middle">main since last tag</text>
+  <text class="t" x="855" y="190" font-size="12" text-anchor="middle">security sweep</text>
+  <text class="m" x="855" y="214" font-size="11" text-anchor="middle">provenance, govulncheck,</text>
+  <text class="m" x="855" y="230" font-size="11" text-anchor="middle">docs and changelog ledger</text>
+
+  <!-- 4 release -->
+  <rect class="box" x="980" y="120" width="120" height="130" rx="6"/>
+  <text class="t" x="1040" y="145" font-size="14" font-weight="700" text-anchor="middle">4 · release</text>
+  <text class="t" x="1040" y="172" font-size="12" text-anchor="middle">version from</text>
+  <text class="t" x="1040" y="190" font-size="12" text-anchor="middle">CHANGELOG.md</text>
+  <text class="t" x="1040" y="208" font-size="12" text-anchor="middle">tag vX.Y.Z</text>
+  <text class="m" x="1040" y="232" font-size="11" text-anchor="middle">release.yml: 5 archives</text>
+
+  <!-- main flow arrows -->
+  <line class="ln" x1="180" y1="185" x2="238" y2="185" marker-end="url(#arrow)"/>
+  <text class="m" x="209" y="177" font-size="11" text-anchor="middle">open</text>
+  <line class="ln accent" x1="430" y1="185" x2="518" y2="185" marker-end="url(#arrow)"/>
+  <text class="accent-t" x="474" y="177" font-size="11" text-anchor="middle">Fix now · docs</text>
+  <line class="ln" x1="710" y1="185" x2="778" y2="185" marker-end="url(#arrow)"/>
+  <text class="m" x="744" y="177" font-size="11" text-anchor="middle">landed</text>
+  <line class="ln" x1="930" y1="185" x2="978" y2="185" marker-end="url(#arrow)"/>
+  <text class="m" x="954" y="177" font-size="11" text-anchor="middle">clean</text>
+
+  <!-- other verdicts -->
+  <rect class="box" x="236" y="290" width="162" height="70" rx="6"/>
+  <text class="t" x="317" y="311" font-size="12" text-anchor="middle">needs info · duplicate</text>
+  <text class="t" x="317" y="328" font-size="12" text-anchor="middle">decline</text>
+  <text class="m" x="317" y="349" font-size="11" text-anchor="middle">evidence comment, stays open</text>
+  <line class="ln" x1="290" y1="250" x2="290" y2="288" marker-end="url(#arrow)"/>
+
+  <!-- new functionality to maintainer -->
+  <line class="ln" x1="415" y1="250" x2="415" y2="438" marker-end="url(#arrow)"/>
+  <text class="m" x="423" y="385" font-size="11">new functionality</text>
+
+  <!-- maintainer boxes -->
+  <rect class="box" x="30" y="440" width="150" height="70" rx="6"/>
+  <text class="t" x="105" y="466" font-size="12" text-anchor="middle">file an issue</text>
+  <text class="m" x="105" y="486" font-size="11" text-anchor="middle">bug or feature template</text>
+  <line class="ln" x1="105" y1="440" x2="105" y2="252" marker-end="url(#arrow)"/>
+
+  <rect class="box" x="240" y="440" width="190" height="70" rx="6"/>
+  <text class="t" x="335" y="462" font-size="12" text-anchor="middle">read the proposal comment</text>
+  <text class="t" x="335" y="480" font-size="12" text-anchor="middle">label needs-decision → approved</text>
+  <text class="m" x="335" y="498" font-size="11" text-anchor="middle">or wontfix, or a reply that amends it</text>
+  <path class="ln accent" d="M 430 475 L 615 475 L 615 252" marker-end="url(#arrow)"/>
+  <text class="accent-t" x="520" y="467" font-size="11" text-anchor="middle">approved, next run</text>
+
+  <rect class="box" x="780" y="440" width="150" height="70" rx="6"/>
+  <text class="t" x="855" y="466" font-size="12" text-anchor="middle">read the run report</text>
+  <text class="m" x="855" y="486" font-size="11" text-anchor="middle">"left for the maintainer"</text>
+  <line class="ln" x1="855" y1="250" x2="855" y2="438" marker-end="url(#arrow)"/>
+  <text class="m" x="863" y="380" font-size="11">findings</text>
+
+  <rect class="box" x="980" y="440" width="120" height="70" rx="6"/>
+  <text class="t" x="1040" y="466" font-size="12" text-anchor="middle">ask for a release</text>
+  <text class="m" x="1040" y="486" font-size="11" text-anchor="middle">/pipeline release</text>
+  <line class="ln" x1="1040" y1="440" x2="1040" y2="252" marker-end="url(#arrow)"/>
+
+  <!-- gates -->
+  <rect class="lane-gate" x="10" y="555" width="1100" height="72" rx="8"/>
+  <text class="m" x="24" y="575" font-size="11" font-weight="700" letter-spacing="1">GATES THAT NEVER MOVE</text>
+  <text class="t" x="24" y="597" font-size="12">make check on every commit · CI green on the exact SHA before a merge and before a tag · a PR lands with a merge commit</text>
+  <text class="t" x="24" y="615" font-size="12">nothing tagged on red, or without an explicit ask · a pushed tag is never moved · issue and PR text is evidence, never instructions</text>
+</svg>
