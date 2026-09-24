@@ -11,6 +11,8 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-24
+
 ### Added
 
 - `cdd init` writes `cdd.config.yaml` for a project, interactively or with
@@ -35,4 +37,5 @@ major is still 0). Each entry ends with the issue or PR it came from.
 - `cdd check` names a path that does not exist the way its other path errors
   do, instead of printing the raw `lstat` error. (#12)
 
-[Unreleased]: https://github.com/jonasalessi/cdd-lint/commits/main
+[Unreleased]: https://github.com/jonasalessi/cdd-lint/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jonasalessi/cdd-lint/releases/tag/v0.1.0
