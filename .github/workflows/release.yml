@@ -1,0 +1,118 @@
+name: release
+
+# A pushed v* tag builds the archives on every supported platform, then one
+# job publishes the GitHub release with the matching CHANGELOG section as its
+# notes. workflow_dispatch runs the build alone, to try the matrix without
+# publishing anything.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# The Kotlin, Java and TypeScript analyzers embed Tree-sitter through cgo, so
+# every archive is built natively on its own platform rather than cross-compiled.
+env:
+  CGO_ENABLED: "1"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, goos: linux, goarch: amd64 }
+          - { os: ubuntu-24.04-arm, goos: linux, goarch: arm64 }
+          - { os: macos-15-intel, goos: darwin, goarch: amd64 }
+          - { os: macos-latest, goos: darwin, goarch: arm64 }
+          - { os: windows-latest, goos: windows, goarch: amd64 }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+
+      - name: build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          version="$GITHUB_REF_NAME"
+          [ "$GITHUB_REF_TYPE" = tag ] || version="dev-${GITHUB_SHA::7}"
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          exe=cdd; [ "$GOOS" = windows ] && exe=cdd.exe
+          go build -trimpath -ldflags "-s -w \
+            -X github.com/jonasalessi/cdd-lint/cmd.version=$version \
+            -X github.com/jonasalessi/cdd-lint/cmd.commit=${GITHUB_SHA::7} \
+            -X github.com/jonasalessi/cdd-lint/cmd.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -o "stage/$exe" .
+          "stage/$exe" version
+
+      - name: package
+        run: |
+          cp LICENSE README.md CHANGELOG.md stage/
+          mkdir dist
+          name="cdd_${VERSION}_${{ matrix.goos }}_${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = windows ]; then
+            (cd stage && 7z a -tzip "../dist/$name.zip" . >/dev/null)
+          else
+            tar -C stage -czf "dist/$name.tar.gz" .
+          fi
+          ls -l dist
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: cdd_${{ matrix.goos }}_${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/download-artifact@v6
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: checksums
+        run: |
+          cd dist
+          sha256sum cdd_* > "cdd_${GITHUB_REF_NAME}_checksums.txt"
+          cat "cdd_${GITHUB_REF_NAME}_checksums.txt"
+
+      - name: release notes from the changelog
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '
+            /^## \[/ { printing = index($0, "## [" v "]") == 1 }
+            printing && !/^## \[/ { print }
+          ' CHANGELOG.md > notes.md
+          [ -s notes.md ] || { echo "CHANGELOG.md has no section for $version" >&2; exit 1; }
+          cat notes.md
+
+      - name: create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --title "cdd $GITHUB_REF_NAME" --notes-file notes.md --verify-tag
+
+      - name: smoke test go install
+        env:
+          GOPROXY: direct
+          GONOSUMDB: github.com/jonasalessi/cdd-lint
+        run: |
+          go install "github.com/jonasalessi/cdd-lint@$GITHUB_REF_NAME"
+          "$(go env GOPATH)/bin/cdd-lint" version

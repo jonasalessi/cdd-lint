@@ -63,6 +63,16 @@ metric id or mode is spelled out as a string outside the places listed in
 the next section, or if a language-keyed table appears outside
 `internal/analyze/` and `internal/languages/`.
 
+## Changelog
+
+Every user-visible change adds one line under `Unreleased` in
+[CHANGELOG.md](CHANGELOG.md), in the category that names its release
+impact: `Fixed` for a bug, `Added`, `Changed` or `Removed` for a feature,
+with **Breaking** in front when a public surface changes. End the line with
+the issue or PR number. A release reads that section to pick the next
+version; [docs/workflow.md](docs/workflow.md) describes the whole path from
+an issue to a tag.
+
 ## Adding a language
 
 Every language lives in one directory, `internal/analyze/<id>/`, and is

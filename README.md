@@ -54,6 +54,10 @@ make build      # writes bin/cdd with version, commit and date injected
 ./bin/cdd version
 ```
 
+Each [release](https://github.com/jonasalessi/cdd-lint/releases) also ships
+a prebuilt archive for Linux, macOS and Windows with a SHA-256 checksum
+file, and [CHANGELOG.md](CHANGELOG.md) lists what changed in it.
+
 ## Usage
 
 Every command reads `cdd.config.yaml` from the working directory. Pass
@@ -64,6 +68,7 @@ cdd --help      # the command list
 cdd version     # version, plus commit and date when the build has them
 cdd init        # Initialize the configuration
 cdd check       # Measure the project against the configuration
+cdd hook git    # Install a pre-commit hook that checks what is staged
 ```
 
 ### cdd init
@@ -211,7 +216,12 @@ describes it.
 | `--all` | Lists every unit, not only the ones over their limit. |
 | `--explain` | Lists every counted construct of each listed unit with its position and ICPs. |
 | `--format` | Renders the report as `console`, `json`, `xml` or `markdown`, ignoring the configured `reporter.format`. |
+| `--staged` | Analyzes the files staged in git instead of `[path...]`. Files no configured language claims, files `exclude` matches and files outside the configuration's directory are dropped; when nothing is left the command prints nothing and exits `0`. |
 | `--config` | Path to the configuration file. Default `cdd.config.yaml`. |
+
+`--staged` is what the hook of [`cdd hook git`](#cdd-hook-git) runs. It
+analyzes the working-tree content of the staged paths, so a partially
+staged file is judged on edits that are not in the commit.
 
 Only `strict_all` blocks today. `strict_on_new_only` and `boy_scout` report
 their violations and say they are not enforced.
@@ -224,6 +234,50 @@ their violations and say they are not enforced.
 | `1` | A unit is over its limit while `block_on_ci` is true and `legacy_mode` is `strict_all`. |
 | `2` | The timeout elapsed. The report printed first covers the files analyzed in time. |
 | `1` | Usage error, missing configuration file, or a configuration that fails validation. |
+
+### cdd hook git
+
+`hook git` writes a block into the repository's `pre-commit` hook that runs
+`cdd check --staged` on every commit. A commit is blocked exactly when a CI
+run would fail: `block_on_ci: true` with `legacy_mode: strict_all`. Any other
+enforcement prints the report and lets the commit through.
+
+```
+$ cdd hook git
+installed pre-commit hook at .git/hooks/pre-commit
+```
+
+The hook file is the one git reads, so `core.hooksPath` and linked worktrees
+are honored. The command needs a `cdd.config.yaml`; run `cdd init` first.
+
+- A missing hook file is created.
+- An existing `sh`, `bash` or `zsh` script keeps its content: the block goes
+  right after the shebang, so a script that ends in `exit 0` cannot skip it.
+- Running the command again replaces the block in place, which is how an
+  upgrade of `cdd` refreshes it.
+- A hook of another interpreter, or a symlink a hook manager owns, is left
+  untouched and reported with exit `1`.
+- A configuration away from the default location is baked in as
+  `--config`, relative to the repository root.
+
+The block finds `cdd` on `PATH` at commit time and blocks the commit when it
+is missing, naming the fix. Skip the hook once with `git commit --no-verify`.
+
+`cdd hook git --remove` takes the block out again, deletes the file when
+nothing else was in it, and exits `0` whether or not a block was there.
+
+Projects on husky, lefthook or the pre-commit framework do not need this
+command: add `cdd check --staged` as a pre-commit step in their own
+configuration.
+
+| Flag | What it does |
+| --- | --- |
+| `--remove` | Removes the block from the hook instead of installing it. |
+| `--config` | Configuration the hook checks. Default `cdd.config.yaml`. |
+
+Exit `0` after an install, update or removal; exit `1` outside a git
+repository, without a configuration file, or when the existing hook cannot
+take the block.
 
 ## Language support
 
@@ -247,7 +301,9 @@ Bugs and feature requests go in the [issue tracker](https://github.com/jonasales
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to
+get started, and [docs/workflow.md](docs/workflow.md) for how an issue
+becomes a release.
 
 ## License
 

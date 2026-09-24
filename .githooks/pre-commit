@@ -1,4 +1,14 @@
 #!/bin/sh
+
+# >>> cdd hook git >>>
+# Installed by "cdd hook git"; remove with "cdd hook git --remove".
+if ! command -v cdd >/dev/null 2>&1; then
+  echo 'cdd: not found in PATH; install cdd or run "cdd hook git --remove"' >&2
+  exit 1
+fi
+cdd check --staged || exit $?
+# <<< cdd hook git <<<
+
 # Formats and lint-fixes staged Go files before every commit.
 # Fixed files are re-staged automatically; issues the linter cannot fix
 # block the commit so they never reach CI.

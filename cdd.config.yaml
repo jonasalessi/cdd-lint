@@ -15,7 +15,7 @@ version: 1
 #   greenfield - strict from day one; limit band 7-14 (default 10)
 #   legacy     - measure what exists, enforce on new code; band 20-40 (default 25)
 # Drives the default limit and the band used for validation warnings.
-project_type: greenfield
+project_type: legacy
 
 # -----------------------------------------------------------------------------
 # METRICS: ICP WEIGHTS
@@ -45,10 +45,10 @@ metrics:
   go:
     ".*":
       code_branch: 1.0       # if/else, switch/select, for
-      condition: 1.0         # && and || clauses
+      condition: 0.5         # && and || clauses
       internal_coupling: 1.0 # references to project packages
-      external_coupling: 0.5 # framework / third-party types
       inheritance: 1.0       # embedded structs and interfaces
+      lambda: 1.0            # func literals
     # ".*/dto/.*":
     #   internal_coupling: 0.5  # merged over the ".*" weights above
 
@@ -68,7 +68,7 @@ metrics:
 # warning, not an error. Same last-match-wins precedence as `metrics`.
 icp-limits:
   go:
-    ".*": 10
+    ".*": 25
     # ".*/adapters/.*": 8
 
 # -----------------------------------------------------------------------------

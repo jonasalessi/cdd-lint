@@ -98,6 +98,11 @@ type Request struct {
 	// named here must exist, belong to a configured language and pass the
 	// include/exclude patterns; a directory is walked like Root would be.
 	Paths []string
+	// SkipUnclaimed drops a file in Paths that no configured language
+	// claims or that the patterns exclude, instead of failing the run. A
+	// caller that did not choose the files, such as a pre-commit hook fed
+	// by git, sets it; an editor naming a saved file wants the error.
+	SkipUnclaimed bool
 }
 
 // RunResult is the outcome of one run over a project.

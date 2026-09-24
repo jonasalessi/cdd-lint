@@ -5,6 +5,8 @@ import (
 
 	ktbind "github.com/tree-sitter-grammars/tree-sitter-kotlin/bindings/go"
 	ts "github.com/tree-sitter/go-tree-sitter"
+
+	"github.com/jonasalessi/cdd-lint/internal/analyze/internal/treesitter"
 )
 
 // kind is this package's dense id for the tree-sitter node kinds the
@@ -195,6 +197,28 @@ func (g *grammar) kindOf(n *ts.Node) kind {
 		return kindOther
 	}
 	return g.byID[id]
+}
+
+// childOfKind returns the first named child of n with the given kind, nil
+// when there is none.
+func (g *grammar) childOfKind(n *ts.Node, k kind) *ts.Node {
+	for _, child := range treesitter.NamedChildren(n) {
+		candidate := child
+		if g.kindOf(&candidate) == k {
+			return &candidate
+		}
+	}
+	return nil
+}
+
+// nodeOr returns n when the grammar gave one and fallback otherwise, so a
+// charge always has a range to point at, even on a shape the grammar spells
+// without the node the rule reads.
+func nodeOr(n, fallback *ts.Node) *ts.Node {
+	if n == nil {
+		return fallback
+	}
+	return n
 }
 
 // hasToken reports whether one of n's direct children is the anonymous

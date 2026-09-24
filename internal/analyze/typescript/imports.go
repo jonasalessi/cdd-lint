@@ -233,7 +233,7 @@ func (c *counter) countCoupling(mods []module) {
 // uses reports whether the unit mentions any of the given bindings.
 func (c *counter) uses(bindings []string) bool {
 	for _, b := range bindings {
-		if _, ok := c.refs[b]; ok {
+		if _, ok := c.decls.refs[b]; ok {
 			return true
 		}
 	}

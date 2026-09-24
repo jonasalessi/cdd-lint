@@ -4,16 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-	"path/filepath"
-	"runtime"
 	"slices"
 	"strings"
-	"sync"
 	"time"
-
-	"golang.org/x/sync/errgroup"
 
 	"github.com/jonasalessi/cdd-lint/internal/config"
 )
@@ -89,8 +82,10 @@ type plan struct {
 	languages  map[config.Language]languagePlan
 	byExt      map[string]config.Language
 	matcher    *matcher
-	timeout    time.Duration
-	warnings   []string
+	// skipUnclaimed is Request.SkipUnclaimed.
+	skipUnclaimed bool
+	timeout       time.Duration
+	warnings      []string
 }
 
 // newPlan indexes the configured registry metadata needed to collect
@@ -101,6 +96,8 @@ func newPlan(req Request) (*plan, error) {
 		byExt:     make(map[string]config.Language),
 		timeout:   req.Config.Timeout,
 		warnings:  enforcementWarnings(req.Config.Enforcement),
+
+		skipUnclaimed: req.SkipUnclaimed,
 	}
 	if err := p.indexConfigured(req); err != nil {
 		return nil, err
@@ -220,98 +217,7 @@ func enforcementWarnings(e config.Enforcement) []string {
 // analyze runs the worker pool over found and returns the finished reports
 // in completion order.
 func (p *plan) analyze(ctx context.Context, root string, found []candidate) ([]FileReport, error) {
-	if len(found) == 0 {
-		return nil, nil
-	}
-	workers := min(runtime.GOMAXPROCS(0), len(found))
-	g, gctx := errgroup.WithContext(ctx)
-	// One slot per worker plus the producer, which would otherwise wait for
-	// a slot no worker ever releases.
-	g.SetLimit(workers + 1)
-	jobs := make(chan candidate)
-	g.Go(func() error { return produce(gctx, jobs, found) })
-
-	var (
-		mu    sync.Mutex
-		files []FileReport
-	)
-	emit := func(f FileReport) {
-		mu.Lock()
-		defer mu.Unlock()
-		files = append(files, f)
-	}
-	for range workers {
-		g.Go(func() error { return p.work(gctx, root, jobs, emit) })
-	}
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-	return files, nil
-}
-
-// produce feeds the workers until the files run out or the run stops.
-func produce(ctx context.Context, jobs chan<- candidate, found []candidate) error {
-	defer close(jobs)
-	for _, c := range found {
-		select {
-		case jobs <- c:
-		case <-ctx.Done():
-			return nil
-		}
-	}
-	return nil
-}
-
-// work analyzes files until the channel closes or the run stops. Analyzers
-// are not safe for concurrent use, so each worker builds its own per
-// language and releases them all on the way out.
-func (p *plan) work(ctx context.Context, root string, jobs <-chan candidate, emit func(FileReport)) (err error) {
-	analyzers := make(map[config.Language]Analyzer)
-	defer func() { err = errors.Join(err, closeAnalyzers(analyzers)) }()
-	for c := range jobs {
-		if ctx.Err() != nil {
-			return nil
-		}
-		report, fileErr := p.analyzeFile(ctx, analyzers, root, c)
-		if fileErr != nil {
-			if stoppedEarly(fileErr) || ctx.Err() != nil {
-				return nil
-			}
-			return fmt.Errorf("analyze %s: %w", c.path, fileErr)
-		}
-		emit(report)
-	}
-	return nil
-}
-
-// analyzeFile reads one file, counts it with the worker's analyzer for that
-// language, and weighs the counts against the patterns the path resolves to.
-func (p *plan) analyzeFile(
-	ctx context.Context,
-	analyzers map[config.Language]Analyzer,
-	root string,
-	c candidate,
-) (FileReport, error) {
-	lang := p.languages[c.lang]
-	analyzer, built := analyzers[c.lang]
-	if !built {
-		analyzer = lang.newAnalyzer(Options{InternalPrefixes: lang.prefixes})
-		analyzers[c.lang] = analyzer
-	}
-	src, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(c.path)))
-	if err != nil {
-		return FileReport{}, err
-	}
-	result, err := analyzer.Analyze(ctx, c.path, src)
-	if err != nil {
-		return FileReport{}, err
-	}
-	return FileReport{
-		Path:     c.path,
-		Language: c.lang,
-		Units:    lang.resolver.Resolve(c.path, result.Units),
-		Warnings: result.Warnings,
-	}, nil
+	return (&pool{root: root, languages: p.languages}).run(ctx, found)
 }
 
 // stoppedResult builds the partial result returned when the shared run
@@ -333,18 +239,6 @@ func (p *plan) stoppedResult(
 	}
 	result.Blocked = blocked
 	return result, fmt.Errorf("%s: %w", stopped, ErrTimeout)
-}
-
-// closeAnalyzers releases the analyzers that hold resources, which for a
-// parser binding are outside the Go heap.
-func closeAnalyzers(analyzers map[config.Language]Analyzer) error {
-	var errs []error
-	for _, a := range analyzers {
-		if closer, ok := a.(io.Closer); ok {
-			errs = append(errs, closer.Close())
-		}
-	}
-	return errors.Join(errs...)
 }
 
 // stoppedEarly reports whether err is the run ending rather than failing.

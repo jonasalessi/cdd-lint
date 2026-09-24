@@ -162,7 +162,7 @@ func TestRunPathsRejectsASymlinkedDirectory(t *testing.T) {
 	assert.Contains(t, err.Error(), "symlinked directory")
 }
 
-func TestRunPathsRejectsAFileNoLanguageClaims(t *testing.T) {
+func TestRunPathsRejectsAFileNoLanguageClaims(t *testing.T) { // TC-A1
 	root := writeTree(t, map[string]string{"README.md": "docs"})
 	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha"}
 
@@ -180,6 +180,73 @@ func TestRunPathsRejectsAnExcludedFile(t *testing.T) {
 	_, err := runPaths(t, root, cfg, []string{"src/a.test.alpha"}, alpha)
 
 	require.EqualError(t, err, "src/a.test.alpha is excluded by the configuration")
+}
+
+// runPathsSkipping is runPaths with Request.SkipUnclaimed set.
+func runPathsSkipping(
+	t *testing.T,
+	root string,
+	cfg *config.Config,
+	paths []string,
+	langs ...*fakeLanguage,
+) (RunResult, error) {
+	t.Helper()
+	registry := make([]Language, len(langs))
+	for i, l := range langs {
+		registry[i] = l.language()
+	}
+	return Run(t.Context(), Request{Root: root, Config: cfg, Languages: registry, Paths: paths, SkipUnclaimed: true})
+}
+
+func TestRunSkipUnclaimedDropsAFileNoLanguageClaims(t *testing.T) { // TC-A2
+	root := writeTree(t, map[string]string{"README.md": "docs", "src/a.alpha": "a"})
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha", result: oneUnit("A", nil)}
+
+	got, err := runPathsSkipping(t, root, testConfig(langAlpha), []string{"README.md", "src/a.alpha"}, alpha)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"src/a.alpha"}, paths(got.Files))
+}
+
+func TestRunSkipUnclaimedDropsAnExcludedFile(t *testing.T) { // TC-A3
+	root := writeTree(t, map[string]string{"src/a.test.alpha": "a", "src/a.alpha": "a"})
+	cfg := testConfig(langAlpha)
+	cfg.Exclude = []string{"**/*.test.alpha"}
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha", result: oneUnit("A", nil)}
+
+	got, err := runPathsSkipping(t, root, cfg, []string{"src/a.test.alpha", "src/a.alpha"}, alpha)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"src/a.alpha"}, paths(got.Files))
+}
+
+func TestRunSkipUnclaimedStillReportsAMissingPath(t *testing.T) { // TC-A4
+	root := writeTree(t, map[string]string{"src/a.alpha": "a"})
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha"}
+
+	_, err := runPathsSkipping(t, root, testConfig(langAlpha), []string{"src/missing.alpha"}, alpha)
+
+	require.ErrorIs(t, err, os.ErrNotExist)
+}
+
+func TestRunSkipUnclaimedStillWalksADirectory(t *testing.T) { // TC-A5
+	root := writeTree(t, map[string]string{"src/a.alpha": "a", "src/nested/b.alpha": "b", "src/README.md": "docs"})
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha", result: oneUnit("A", nil)}
+
+	got, err := runPathsSkipping(t, root, testConfig(langAlpha), []string{"src"}, alpha)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"src/a.alpha", "src/nested/b.alpha"}, paths(got.Files))
+}
+
+func TestRunSkipUnclaimedWithNothingEligibleIsEmpty(t *testing.T) { // TC-A6
+	root := writeTree(t, map[string]string{"README.md": "docs", "notes.txt": "n"})
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha"}
+
+	got, err := runPathsSkipping(t, root, testConfig(langAlpha), []string{"README.md", "notes.txt"}, alpha)
+
+	require.NoError(t, err)
+	assert.Empty(t, got.Files)
 }
 
 func TestRunPathsReportsAMissingPath(t *testing.T) {
