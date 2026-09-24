@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -649,6 +650,11 @@ func TestRunReturnsAPartialResultWhenTheTimeoutElapses(t *testing.T) {
 }
 
 func TestRunPreservesFinalizedBlockingOutcomeWhenCancellationReturnsAPartialResult(t *testing.T) {
+	// One worker, so a.alpha is reported before b.alpha blocks the run;
+	// with two, the worker holding a.alpha can see the cancellation first
+	// and drop it as a remaining file.
+	previous := runtime.GOMAXPROCS(1)
+	t.Cleanup(func() { runtime.GOMAXPROCS(previous) })
 	root := writeTree(t, map[string]string{"a.alpha": "a", "b.alpha": "b"})
 	cfg := testConfig(langAlpha)
 	cfg.Timeout = time.Second
