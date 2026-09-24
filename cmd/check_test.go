@@ -439,8 +439,28 @@ func TestCheckMissingPathIsAnError(t *testing.T) {
 	stdout, stderr, code := runCdd(t, dir, "check", filepath.Join("src", "missing.ts"))
 	assert.Equal(t, 1, code)
 	assert.Empty(t, stdout)
-	assert.Contains(t, stderr, "missing.ts")
-	assert.Contains(t, stderr, "no such file")
+	assert.Contains(t, stderr, "src/missing.ts: no such file or directory")
+	assert.NotContains(t, stderr, "lstat")
+}
+
+// TestCheckMissingPathIsNamedLikeOtherPathErrors covers a missing directory
+// and a missing member of a comma-separated list: the message names the
+// path, not the system call that looked it up (#12).
+func TestCheckMissingPathIsNamedLikeOtherPathErrors(t *testing.T) {
+	dir := t.TempDir()
+	writeTSFixture(t, dir)
+	writeFixtureFile(t, dir, "src/greeter.ts", cleanSource)
+
+	for _, tc := range []struct{ arg, want string }{
+		{"nope", "nope: no such file or directory"},
+		{"src," + filepath.Join("src", "nope.ts"), "src/nope.ts: no such file or directory"},
+	} {
+		stdout, stderr, code := runCdd(t, dir, "check", tc.arg)
+		assert.Equal(t, 1, code, tc.arg)
+		assert.Empty(t, stdout, tc.arg)
+		assert.Contains(t, stderr, tc.want, tc.arg)
+		assert.NotContains(t, stderr, "lstat", tc.arg)
+	}
 }
 
 func TestCheckTimeoutReportsPartially(t *testing.T) {

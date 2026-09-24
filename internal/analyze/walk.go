@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -65,11 +66,11 @@ func (p *plan) collectPath(ctx context.Context, root, rel string) ([]candidate, 
 	full := filepath.Join(root, filepath.FromSlash(rel))
 	link, err := os.Lstat(full)
 	if err != nil {
-		return nil, err
+		return nil, namedPathError(rel, err)
 	}
 	info, err := os.Stat(full)
 	if err != nil {
-		return nil, err
+		return nil, namedPathError(rel, err)
 	}
 	if link.Mode()&os.ModeSymlink != 0 && info.IsDir() {
 		return nil, fmt.Errorf("%s: symlinked directory is not supported", rel)
@@ -85,6 +86,16 @@ func (p *plan) collectPath(ctx context.Context, root, rel string) ([]candidate, 
 		return nil, err
 	}
 	return []candidate{c}, nil
+}
+
+// namedPathError reports a failed lookup by the path the caller named, the
+// way the other path errors do, instead of by the system call that failed.
+func namedPathError(rel string, err error) error {
+	var pathErr *fs.PathError
+	if errors.As(err, &pathErr) {
+		return fmt.Errorf("%s: %w", rel, pathErr.Err)
+	}
+	return err
 }
 
 // file claims one root-relative path for the language its extension names,
