@@ -6,11 +6,13 @@ package report
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jonasalessi/cdd-lint/internal/analyze"
@@ -98,20 +100,60 @@ func Emit(stdout io.Writer, r config.Reporter, res analyze.RunResult, opts Optio
 	if err := Write(&buf, r.Format, res, opts); err != nil {
 		return "", err
 	}
-	path := *r.OutputFile
-	if !filepath.IsAbs(path) {
-		path = filepath.Join(res.Root, path)
+	path, err := outputPath(res.Root, *r.OutputFile)
+	if err != nil {
+		return "", err
 	}
-	if err := writeFile(path, buf.Bytes()); err != nil {
+	if err := writeFile(res.Root, path, buf.Bytes()); err != nil {
 		return "", err
 	}
 	return path, nil
 }
 
+// outputPath resolves the configured file against root. The configuration
+// may come from a repository the user did not write, so the report never
+// lands outside the project: an absolute path or a way out through ".." is
+// refused before anything is touched.
+func outputPath(root, configured string) (string, error) {
+	if filepath.IsAbs(configured) {
+		return "", fmt.Errorf("outputFile %s: must be relative to the configuration, inside the project", configured)
+	}
+	path := filepath.Join(root, configured)
+	if !within(root, path) {
+		return "", fmt.Errorf("outputFile %s: leaves the project directory", configured)
+	}
+	return path, nil
+}
+
+// within reports whether path is root or lies under it.
+func within(root, path string) bool {
+	rel, err := filepath.Rel(root, path)
+	if err != nil {
+		return false
+	}
+	return rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
+}
+
 // writeFile creates or truncates path. The report is rendered before the
-// file is touched, so a format error never leaves an empty file behind.
-func writeFile(path string, data []byte) error {
-	dir := filepath.Dir(path)
+// file is touched, so a format error never leaves an empty file behind. A
+// symlink in the parent directory or as the target itself could lead out of
+// root, so both are refused.
+func writeFile(root, path string, data []byte) error {
+	if err := checkOutputDir(root, filepath.Dir(path)); err != nil {
+		return err
+	}
+	if err := checkOutputTarget(path); err != nil {
+		return err
+	}
+	if err := os.WriteFile(path, data, outputFileMode); err != nil {
+		return fmt.Errorf("write report: %w", err)
+	}
+	return nil
+}
+
+// checkOutputDir requires dir to exist, be a directory and still lie under
+// root once every symlink on both sides is resolved.
+func checkOutputDir(root, dir string) error {
 	info, err := os.Stat(dir)
 	if err != nil {
 		return fmt.Errorf("output directory %s: %w", dir, err)
@@ -119,8 +161,32 @@ func writeFile(path string, data []byte) error {
 	if !info.IsDir() {
 		return fmt.Errorf("output directory %s: not a directory", dir)
 	}
-	if err := os.WriteFile(path, data, outputFileMode); err != nil {
-		return fmt.Errorf("write report: %w", err)
+	realRoot, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return fmt.Errorf("output directory %s: %w", dir, err)
+	}
+	realDir, err := filepath.EvalSymlinks(dir)
+	if err != nil {
+		return fmt.Errorf("output directory %s: %w", dir, err)
+	}
+	if !within(realRoot, realDir) {
+		return fmt.Errorf("output directory %s: a symlink leaves the project directory", dir)
+	}
+	return nil
+}
+
+// checkOutputTarget refuses an existing target that is a symlink; a missing
+// or regular file is fine.
+func checkOutputTarget(path string) error {
+	info, err := os.Lstat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("output file %s: %w", path, err)
+	}
+	if info.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("output file %s: is a symlink", path)
 	}
 	return nil
 }
