@@ -54,6 +54,10 @@ make build      # writes bin/cdd with version, commit and date injected
 ./bin/cdd version
 ```
 
+Each [release](https://github.com/jonasalessi/cdd-lint/releases) also ships
+a prebuilt archive for Linux, macOS and Windows with a SHA-256 checksum
+file, and [CHANGELOG.md](CHANGELOG.md) lists what changed in it.
+
 ## Usage
 
 Every command reads `cdd.config.yaml` from the working directory. Pass
@@ -297,7 +301,9 @@ Bugs and feature requests go in the [issue tracker](https://github.com/jonasales
 
 ## Contributing
 
-Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to
+get started, and [docs/workflow.md](docs/workflow.md) for how an issue
+becomes a release.
 
 ## License
 
