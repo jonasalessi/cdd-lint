@@ -26,4 +26,9 @@ major is still 0). Each entry ends with the issue or PR it came from.
   run timeout that reports a partial result instead of hanging.
 - `cdd version` prints the version, commit and build date.
 
+### Fixed
+
+- `cdd check` names a path that does not exist the way its other path errors
+  do, instead of printing the raw `lstat` error. (#12)
+
 [Unreleased]: https://github.com/jonasalessi/cdd-lint/commits/main

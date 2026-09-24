@@ -256,6 +256,7 @@ func TestRunPathsReportsAMissingPath(t *testing.T) {
 	_, err := runPaths(t, root, testConfig(langAlpha), []string{"src/missing.alpha"}, alpha)
 
 	require.ErrorIs(t, err, os.ErrNotExist)
+	assert.EqualError(t, err, "src/missing.alpha: no such file or directory")
 }
 
 func TestRunPathsCanceledContextStopsCollection(t *testing.T) {
