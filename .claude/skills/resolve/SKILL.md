@@ -102,7 +102,7 @@ Pending or skipped checks are not green.
 ### 7. Merge and close
 
 ```sh
-gh pr merge --rebase --delete-branch
+gh pr merge --merge --delete-branch
 git switch main && git pull --ff-only
 gh issue view "$N" --json state
 ```

@@ -25,16 +25,18 @@ commits and rerun the affected phases.
 ## Phase 1: provenance
 
 ```sh
-git log --format='%h %an %s' "$RANGE"
+git log --first-parent --format='%h %an %s' "$RANGE"
+git log --no-merges --format='%h %an %s' "$RANGE"
 git diff --stat "$RANGE"
 git diff --name-status "$RANGE"
 git diff --check "$RANGE"
 ```
 
-Merges are rebases, so every commit in the range is one change. Map each
-commit to its PR and issue (`gh pr list --state merged --search "<sha>"`),
-and check that no commit escaped an audit, every referenced issue is closed,
-and every commit message reads `<type>: <description>`.
+Every PR lands with a merge commit, so the first-parent log lists the PRs
+and any direct push to `main`. Map each one to its PR and issue
+(`gh pr list --state merged --search "<sha>"`), and check that no merge
+or direct commit escaped an audit, every referenced issue is closed, and
+every non-merge commit message reads `<type>: <description>`.
 
 ## Phase 2: composition sweep
 

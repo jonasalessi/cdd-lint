@@ -57,8 +57,8 @@ change the verdict.
 ## Step 4: resolve
 
 `resolve` for every approved ticket, in the audit's priority order. It
-opens one PR per ticket, waits for green CI, merges with a rebase and lets
-`Closes #N` close the issue. More than three tickets in the batch means
+opens one PR per ticket, waits for green CI, merges it with a merge
+commit and lets `Closes #N` close the issue. More than three tickets in the batch means
 `post-audit` runs before the report.
 
 ## Step 5: release, only when asked

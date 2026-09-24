@@ -13,7 +13,7 @@ headless through `scripts/pipeline.sh`.
 | 1 | `pr-audit` | a verdict per open pull request, from evidence in the diff and `make check` in an isolated worktree |
 | 1 | `dependency-bump` | one consolidated PR that closes every Dependabot PR |
 | 2 | `issue-audit` | a verdict per issue: reproduced or not, root cause, fix plan, changelog category |
-| 3 | `resolve` | one branch, one PR and one rebase merge per approved ticket, test first |
+| 3 | `resolve` | one branch, one PR and one merge per approved ticket, test first |
 | 4 | `post-audit` | an audit of everything on `main` since the last tag, required after more than three tickets and before every release |
 | 5 | `release` | the changelog finalised, `main` tagged, the archives and the GitHub release built by `release.yml` |
 | all | `pipeline` | the five steps in order, with the approval policy that stands in for a maintainer |
@@ -84,8 +84,9 @@ change to the workflow without publishing.
 
 - `make check` is the definition of done for every commit, and hosted CI
   must be green on the exact SHA before a merge and before a tag.
-- Merges are rebases, so every commit reaches `main` as `<type>:
-  <description>` with no trailer; the `commit-msg` hook rejects the rest.
+- A PR lands with a merge commit, so every commit in it reaches `main` as
+  `<type>: <description>` with no trailer; the `commit-msg` hook rejects
+  the rest.
 - Nothing is tagged on red, pending or skipped CI, with a blocking finding
   open, or without an explicit ask to release.
 - A pushed tag is never moved or deleted; a bad release gets a patch.

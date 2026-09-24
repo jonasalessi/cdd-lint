@@ -73,7 +73,7 @@ git push -u origin build/bump-deps
 gh pr create --base main --title "build: bump dependencies" --body "Closes #A
 Closes #B"
 gh pr checks --watch
-gh pr merge --rebase --delete-branch
+gh pr merge --merge --delete-branch
 gh pr list --state open --author 'app/dependabot'
 ```
 

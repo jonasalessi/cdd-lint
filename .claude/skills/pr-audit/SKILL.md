@@ -89,9 +89,10 @@ Judge the diff and the code around it against:
 6. **Changelog.** One line under `Unreleased` in `CHANGELOG.md`, in the
    category that names the release impact, marked **Breaking** when a
    public surface changes.
-7. **Commit messages.** Merges are rebases, so every commit lands as is and
-   must read `<type>: <description>` with no trailer. A PR whose commits do
-   not is squashed with a conforming subject instead.
+7. **Commit messages.** A PR lands with a merge commit, so every commit in
+   it reaches `main` as is and must read `<type>: <description>` with no
+   trailer. A PR whose commits do not is squashed with a conforming subject
+   instead.
 
 Severities: `[CRITICAL]` malicious or readily exploitable; `[BLOCKING]`
 wrong, unsafe, incompatible or untested; `[SHOULD-FIX]` bounded quality or
@@ -129,7 +130,7 @@ The pipeline or the user approves; this skill then lands one PR at a time.
    `maintainerCanModify` allows it; never rewrite contributor commits.
 2. Re-run Phase 2 on the new head, then `make check` once on it.
 3. Wait for `gh pr checks "$N" --watch`; pending or skipped is not green.
-4. `gh pr merge "$N" --rebase --delete-branch`, or `--squash` with a
+4. `gh pr merge "$N" --merge --delete-branch`, or `--squash` with a
    conforming subject when the commits break the message format.
 5. Verify the linked issue closed and record the landed SHA.
 
