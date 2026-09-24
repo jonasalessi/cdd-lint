@@ -264,6 +264,19 @@ func TestCheckConfigRelativeOutputFileUsesTheConfigurationRoot(t *testing.T) {
 	assert.NoFileExists(t, filepath.Join(dir, "reports", "cdd.json"))
 }
 
+func TestCheckRefusesAnOutputFileOutsideTheProject(t *testing.T) {
+	dir := t.TempDir()
+	writeTSFixture(t, dir)
+	writeFixtureFile(t, dir, "src/greeter.ts", cleanSource)
+	editConfig(t, dir, "  outputFile: null", `  outputFile: "../canary.json"`)
+
+	_, stderr, code := runCdd(t, dir, "check")
+
+	require.Equal(t, 1, code)
+	assert.Contains(t, stderr, "outputFile")
+	assert.NoFileExists(t, filepath.Join(filepath.Dir(dir), "canary.json"))
+}
+
 func TestCheckJSONReportToFile(t *testing.T) {
 	dir := t.TempDir()
 	writeTSFixture(t, dir)

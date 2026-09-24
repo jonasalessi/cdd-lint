@@ -58,4 +58,4 @@ Read only the document the task needs:
 A change is done when `make check` passes and it is committed. Commit at
 each checkpoint you can describe in one sentence, with the message format
 `<type>: <description>` (types: feat, fix, refactor, perf, docs, test, build,
-ci). When a task is organised by `FR-n`, commit one FR at a time.
+ci). When a task is organised by `FR-n`, commit one FR at a time. When working on a GitHub issue always add in the commit message the issue code like `<type>: #<issue code> <description>`

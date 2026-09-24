@@ -101,7 +101,8 @@ timeout: 5m
 reporter:
   # format: The output style. Supported: console, json, xml, markdown
   format: console
-  # outputFile: Optional path to save the report. null = stdout.
+  # outputFile: Optional path to save the report, relative to this file and
+  # inside the project. null = stdout.
   outputFile: null
 
 # -----------------------------------------------------------------------------

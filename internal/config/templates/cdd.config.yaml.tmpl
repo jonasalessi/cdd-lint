@@ -110,7 +110,8 @@ timeout: {{.Timeout}}
 reporter:
   # format: The output style. Supported: {{.Formats}}
   format: {{.Format}}
-  # outputFile: Optional path to save the report. null = stdout.
+  # outputFile: Optional path to save the report, relative to this file and
+  # inside the project. null = stdout.
   outputFile: {{.OutputFile}}
 
 # -----------------------------------------------------------------------------

@@ -28,6 +28,10 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 ### Fixed
 
+- `reporter.outputFile` is written only inside the project: an absolute path,
+  a path that leaves the configuration's directory through `..`, or a symlink
+  on the way are refused, so a repository under analysis cannot make `cdd
+  check` write outside itself.
 - `cdd check` names a path that does not exist the way its other path errors
   do, instead of printing the raw `lstat` error. (#12)
 
