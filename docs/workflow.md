@@ -95,8 +95,8 @@ change to the workflow without publishing.
 - `make check` is the definition of done for every commit, and hosted CI
   must be green on the exact SHA before a merge and before a tag.
 - A PR lands with a merge commit, so every commit in it reaches `main` as
-  `<type>: <description>` with no trailer; the `commit-msg` hook rejects
-  the rest.
+  `<type>: #<issue> <description>` with no trailer; the `commit-msg` hook
+  rejects the rest.
 - Nothing is tagged on red, pending or skipped CI, with a blocking finding
   open, or without an explicit ask to release.
 - A pushed tag is never moved or deleted; a bad release gets a patch.
