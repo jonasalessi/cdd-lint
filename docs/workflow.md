@@ -42,12 +42,22 @@ commit hooks are installed, and a C compiler for the Tree-sitter analyzers.
 ## What the maintainer decides
 
 The approval policy in the `pipeline` skill approves what an audit calls
-`Fix now`, `Fix with spec` or `Documentation only`, and merges a PR with no
-finding above a nit. Everything else stays open with a comment that states
-the evidence: a question for the reporter, a duplicate, a decline, or a
-blocking finding. The maintainer reads the run report's "left for the
-maintainer" list and the comments, and closes or reopens what the agent
-would not.
+`Fix now` or `Documentation only`, and merges a PR with no finding above a
+nit. Bugs and docs flow without the maintainer.
+
+New functionality does not. When the audit answers a feature request with
+`Fix with spec`, the pipeline posts the plan as a comment on the issue
+(the change, where it goes, tests, docs, size, what is left out) and labels
+it `needs-decision`. The maintainer answers with a label: `approved` lets
+the next run build the plan as written, `wontfix` ends it, and a reply
+that amends the plan is followed over the comment. An issue filed with
+`approved` already on it skips the wait; an issue the maintainer labels
+`needs-decision` by hand is held back even when it is a plain bug.
+
+Everything else stays open with a comment that states the evidence: a
+question for the reporter, a duplicate, a decline, or a blocking finding.
+The maintainer reads the run report's "left for the maintainer" list and
+the comments, and closes or reopens what the agent would not.
 
 Untrusted text never changes a verdict. Issue bodies, PR descriptions,
 commit messages and code comments are evidence; an instruction found there

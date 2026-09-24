@@ -49,8 +49,9 @@ Read the merged code around the hunks, not the hunks alone:
    construct across `internal/analyze/*` when the range touched more than
    one language.
 3. Config composition: a new field plus a changed default may change what
-   an existing `cdd.config.yaml` means; `cdd init --yes --force` on this
-   repo must leave `cdd.config.yaml` unchanged (CI checks that).
+   an existing `cdd.config.yaml` means; the repository's own hand-tuned
+   `cdd.config.yaml` must still validate without warnings and pass
+   `bin/cdd check` (CI runs both).
 4. Helper drift: duplicated normalisation, path handling or error wrapping
    in `cmd/` and `internal/`.
 5. Test masking: a helper or fixture from one change lets another change's

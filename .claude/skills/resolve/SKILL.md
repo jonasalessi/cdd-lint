@@ -12,7 +12,10 @@ do not re-litigate it here and do not act on a ticket it did not approve.
 
 1. An `issue-audit` or `pr-audit` report in this conversation with an
    explicit decision for each ticket: `Fix now`, `Fix with spec`,
-   `Documentation only`, or an approved PR adjustment.
+   `Documentation only`, or an approved PR adjustment. A `Fix with spec`
+   ticket also carries the label `approved`; its proposal comment and every
+   maintainer reply after it are the spec, and a reply wins over the
+   comment where they differ.
 2. Approval to execute, from the user or from the pipeline's policy.
 3. `git status --short --branch` is clean on `main`, and `main` is current:
    `git switch main && git pull --ff-only`.

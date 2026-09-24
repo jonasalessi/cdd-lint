@@ -133,7 +133,17 @@ Severity: Critical | High | Medium | Low
 ### If set aside
 - Research done:
 - Blocking evidence or missing fact:
+
+### Proposal (only for `Fix with spec`)
+<the comment the pipeline posts on the issue, ready to paste>
 ```
+
+The proposal is a maintainer's reply on a public issue, not the audit
+report: a line on what was verified, the change as a short list (command
+or flag, owning package, tests, docs, changelog category), the `FR-n`
+outline when a spec is due, one sentence on size, and what is left out.
+Nothing security-sensitive goes in it. It ends by saying that the label
+`approved` builds it as written and a reply amends it.
 
 Several issues: a table first, one section per issue that needs action or a
 judgement call. Post nothing on GitHub from this skill; the pipeline decides
