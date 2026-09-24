@@ -21,6 +21,19 @@ lays out the theory in full.
 > International Conference on Software Maintenance and Evolution (ICSME),
 > pp. 776-778. https://doi.org/10.1109/ICSME46990.2020.00087
 
+## Why this project exists
+
+`cdd` is a real tool, and it is also the place where I practise maintaining
+an open source project with an AI agent doing the work. A GitHub issue is
+the unit of work: an agent audits it, reproduces it, fixes it behind a test,
+opens the pull request, waits for CI, merges it and cuts the release. I file
+issues, approve new functionality, and read the run report.
+
+![From a GitHub issue to a tagged release: the agent audits, resolves, post-audits and releases; the maintainer files issues, approves features and asks for releases](docs/workflow.svg)
+
+[docs/workflow.md](docs/workflow.md) describes every step, the approval
+policy and the gates that never move.
+
 ## What CDD measures
 
 Every `if`, `&&`, `catch`, coupling to another type and inheritance level adds

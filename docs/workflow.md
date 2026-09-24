@@ -6,6 +6,8 @@ what lands. This page is the map; each step is a skill under
 `.claude/skills/` that a Claude Code session runs, in a terminal or
 headless through `scripts/pipeline.sh`.
 
+![The pipeline: audit, resolve, post-audit, release, and where the maintainer decides](workflow.svg)
+
 ## The steps
 
 | Step | Skill | What it produces |
