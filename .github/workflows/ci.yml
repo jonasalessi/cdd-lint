@@ -35,7 +35,7 @@ jobs:
           go-version-file: go.mod
       - run: make cover
       - name: upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: ./coverage.out
           disable_search: true
