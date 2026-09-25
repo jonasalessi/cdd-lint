@@ -62,8 +62,8 @@ Only after Phase 2 is clear. Check the head out in a worktree with the repo
 hooks disabled, so nothing from the PR runs on commit:
 
 ```sh
-git -c core.hooksPath=/dev/null worktree add .claude/worktrees/pr-$N "$HEAD_SHA"
-cd .claude/worktrees/pr-$N && make check
+git -c core.hooksPath=/dev/null worktree add .worktrees/pr-$N "$HEAD_SHA"
+cd .worktrees/pr-$N && make check
 ```
 
 `make check` is the whole gate: build, tests with the race detector, lint,
