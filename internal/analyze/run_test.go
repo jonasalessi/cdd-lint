@@ -250,6 +250,20 @@ func TestRunSkipUnclaimedWithNothingEligibleIsEmpty(t *testing.T) { // TC-A6
 	assert.Empty(t, got.Files)
 }
 
+func TestRunSkipUnclaimedDropsASymlinkedDirectory(t *testing.T) { // TC-A7
+	root := writeTree(t, map[string]string{"target/a.alpha": "a", "src/b.alpha": "b"})
+	link := filepath.Join(root, "linked")
+	if err := os.Symlink(filepath.Join(root, "target"), link); err != nil {
+		t.Skipf("cannot create directory symlink: %v", err)
+	}
+	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha", result: oneUnit("A", nil)}
+
+	got, err := runPathsSkipping(t, root, testConfig(langAlpha), []string{"linked", "src/b.alpha"}, alpha)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"src/b.alpha"}, paths(got.Files), "git stages the link, not the tree behind it")
+}
+
 func TestRunPathsReportsAMissingPath(t *testing.T) {
 	root := writeTree(t, map[string]string{"src/a.alpha": "a"})
 	alpha := &fakeLanguage{id: langAlpha, ext: ".alpha"}
