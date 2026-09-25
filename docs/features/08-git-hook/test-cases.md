@@ -66,6 +66,9 @@ developer's and CI machine, and a test that needs it skips when it is not.
   and yields the same files as without the flag.
 - **TC-A6** With `SkipUnclaimed` and every named file ineligible, `Run`
   returns an empty `Files` and no error.
+- **TC-A7** With `SkipUnclaimed`, a symlink to a directory in `Paths` is
+  dropped silently, as a walk would drop it; the other named files are
+  still analyzed.
 
 ## FR-3 — `cdd check --staged` (integration, `cmd/check_staged_test.go`)
 

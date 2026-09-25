@@ -3,8 +3,9 @@
 A change to `cdd` starts as a GitHub issue and ends as a tagged release,
 with an agent doing the work in between and a fixed set of gates deciding
 what lands. This page is the map; each step is a skill under
-`.claude/skills/` that a Claude Code session runs, in a terminal or
-headless through `scripts/pipeline.sh`.
+`.agents/skills/` that any agent supporting Agent Skills runs, for example
+Claude Code or Codex, in a terminal or headless through
+`scripts/pipeline.sh`.
 
 ![The pipeline: audit, resolve, post-audit, release, and where the maintainer decides](workflow.svg)
 
@@ -23,7 +24,7 @@ headless through `scripts/pipeline.sh`.
 
 ## Running it
 
-Interactively, in a Claude Code session opened in the repository:
+Interactively, in an agent session opened in the repository:
 
 ```
 /pipeline                 audit and resolve every open PR and issue
@@ -35,11 +36,13 @@ Headless, from a shell or a cron job:
 
 ```sh
 scripts/pipeline.sh 12 release
+PIPELINE_AGENT=codex scripts/pipeline.sh 12 release
 ```
 
-The script runs `claude -p` with the same arguments. It needs `gh` logged
-in with the `repo` and `workflow` scopes, `make setup` run once so the
-commit hooks are installed, and a C compiler for the Tree-sitter analyzers.
+The script runs `claude -p`, or `codex exec` when `PIPELINE_AGENT=codex`,
+with the same arguments. It needs `gh` logged in with the `repo` and
+`workflow` scopes, `make setup` run once so the commit hooks are installed,
+and a C compiler for the Tree-sitter analyzers.
 
 ## What the maintainer decides
 

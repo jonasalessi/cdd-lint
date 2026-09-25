@@ -73,7 +73,7 @@ func (p *plan) collectPath(ctx context.Context, root, rel string) ([]candidate, 
 		return nil, namedPathError(rel, err)
 	}
 	if link.Mode()&os.ModeSymlink != 0 && info.IsDir() {
-		return nil, fmt.Errorf("%s: symlinked directory is not supported", rel)
+		return p.symlinkedDirectory(rel)
 	}
 	if info.IsDir() {
 		return p.walk(ctx, root, full)
@@ -86,6 +86,16 @@ func (p *plan) collectPath(ctx context.Context, root, rel string) ([]candidate, 
 		return nil, err
 	}
 	return []candidate{c}, nil
+}
+
+// symlinkedDirectory is never walked. A caller that named it by hand is
+// told so; one that passes on whatever git staged has it dropped, the way
+// a walk drops it.
+func (p *plan) symlinkedDirectory(rel string) ([]candidate, error) {
+	if p.skipUnclaimed {
+		return nil, nil
+	}
+	return nil, fmt.Errorf("%s: symlinked directory is not supported", rel)
 }
 
 // namedPathError reports a failed lookup by the path the caller named, the

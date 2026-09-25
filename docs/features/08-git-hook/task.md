@@ -108,10 +108,11 @@ the include/exclude patterns drop it — is left out of the run silently.
 When false, behaviour is unchanged: the error stays, and the editor
 contract with it.
 
-`SkipUnclaimed` does not swallow anything else. A path that does not exist,
-a symlinked directory, and a directory in `Paths` behave exactly as before;
-a directory is still walked and the walk already skips what it does not
-claim.
+`SkipUnclaimed` also drops a symlink to a directory, because git stages the
+link itself and a walk never enters one. It does not swallow anything else.
+A path that does not exist and a directory in `Paths` behave exactly as
+before; a directory is still walked and the walk already skips what it does
+not claim.
 
 ### FR-3 — `cdd check --staged`
 
