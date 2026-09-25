@@ -37,7 +37,7 @@
 
   <!-- lanes -->
   <rect class="lane-agent" x="10" y="70" width="1100" height="300" rx="8"/>
-  <text class="m" x="24" y="90" font-size="11" font-weight="700" letter-spacing="1">AGENT (Claude Code)</text>
+  <text class="m" x="24" y="90" font-size="11" font-weight="700" letter-spacing="1">AGENT</text>
   <rect class="lane-you" x="10" y="400" width="1100" height="130" rx="8"/>
   <text class="m" x="24" y="420" font-size="11" font-weight="700" letter-spacing="1">MAINTAINER</text>
 

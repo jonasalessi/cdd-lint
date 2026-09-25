@@ -17,7 +17,7 @@ Read only the document the task needs:
 - `docs/features/<nn>-<name>/task.md` is the spec when a task cites `FR-n`;
   the `test-cases.md` beside it lists the acceptance cases.
 - `docs/workflow.md` when running the issue-to-release pipeline or changing
-  `.github/workflows/release.yml`; the skills under `.claude/skills/` are
+  `.github/workflows/release.yml`; the skills under `.agents/skills/` are
   its steps.
 
 ## Rules the tools cannot check
