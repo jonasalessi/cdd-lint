@@ -5,7 +5,7 @@ with an agent doing the work in between and a fixed set of gates deciding
 what lands. This page is the map; each step is a skill under
 `.agents/skills/` that any agent supporting Agent Skills runs, for example
 Claude Code or Codex, in a terminal or headless through
-`scripts/pipeline.sh`. 
+`scripts/pipeline.sh`.
 
 ![The pipeline: audit, resolve, post-audit, release, and where the maintainer decides](workflow.svg)
 

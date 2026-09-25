@@ -15,7 +15,7 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 - `cdd check --staged` no longer fails with `symlinked directory is not
   supported` when a symlink to a directory is staged; the link is skipped
-  like any other file no language claims.
+  like any other file no language claims. (#29)
 
 ## [0.1.0] - 2026-09-24
 
