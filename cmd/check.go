@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/jonasalessi/cdd-lint/internal/agenthook"
 	"github.com/jonasalessi/cdd-lint/internal/analyze"
 	"github.com/jonasalessi/cdd-lint/internal/config"
 	"github.com/jonasalessi/cdd-lint/internal/git"
@@ -36,12 +37,15 @@ type checkInput struct {
 	format string
 	// staged replaces args with the files staged in git.
 	staged bool
-	opts   report.Options
+	// agent names the coding agent whose hook event on stdin selects the
+	// file; empty outside hook mode.
+	agent string
+	opts  report.Options
 }
 
 func newCheckCmd() *cobra.Command {
 	var all, explain, staged bool
-	var format string
+	var format, agent string
 	c := &cobra.Command{
 		Use:   "check [path...]",
 		Short: "Measure the project and compare every unit with its limit",
@@ -81,16 +85,26 @@ the patterns exclude are left out, and when nothing remains the command
 prints nothing and exits 0. The working-tree content is analyzed, so a
 partially staged file is judged on edits that are not in the commit.
 
+--agent reads the hook event of the named coding agent from stdin and
+analyzes the file it says was just edited, which is what the hook of
+"cdd hook <agent>" runs. A file outside the configuration's directory or
+one no configured language claims ends silently with exit 0. When a unit
+of the file is over its limit, whatever the enforcement says, the report
+goes to stderr and the command exits 2, which the agent is shown as
+something to fix. The configured reporter is not consulted; --format,
+--all and --explain still apply.
+
 Exit codes:
 
   0  no unit is above its limit, or the enforcement only reports them
   1  a unit is above its limit and the enforcement blocks on it, or the
      configuration could not be read or is invalid
-  2  the timeout elapsed; the printed report covers the files analyzed in time`,
+  2  the timeout elapsed; the printed report covers the files analyzed in time,
+     or, with --agent, a unit of the edited file is over its limit`,
 		Args: cobra.ArbitraryArgs,
 		RunE: func(c *cobra.Command, args []string) error {
 			return runCheck(c, configPath, checkInput{
-				args: args, format: format, staged: staged,
+				args: args, format: format, staged: staged, agent: agent,
 				opts: report.Options{All: all, Explain: explain},
 			})
 		},
@@ -100,6 +114,8 @@ Exit codes:
 	c.Flags().BoolVar(&explain, "explain", false, "list every counted construct with its position and ICPs")
 	c.Flags().StringVar(&format, "format", "",
 		"report format, overriding reporter.format: "+strings.Join(config.ReporterFormats(), ", "))
+	c.Flags().StringVar(&agent, "agent", "",
+		"analyze the file named by the hook event on stdin of: "+strings.Join(agenthook.IDs(), ", "))
 	return c
 }
 
@@ -109,6 +125,9 @@ Exit codes:
 func runCheck(c *cobra.Command, path string, in checkInput) error {
 	if err := validateFormat(in.format); err != nil {
 		return err
+	}
+	if in.agent != "" {
+		return runAgentCheck(c, path, in)
 	}
 	root := filepath.Dir(path)
 	paths, err := selectPaths(c.Context(), root, in)

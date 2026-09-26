@@ -6,6 +6,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -39,9 +40,16 @@ func specs() []config.LanguageSpec {
 // on inheriting one.
 func runCdd(t *testing.T, dir string, args ...string) (stdout, stderr string, code int) {
 	t.Helper()
+	return runCddIn(t, dir, "", args...)
+}
+
+// runCddIn is runCdd with stdin holding the given text.
+func runCddIn(t *testing.T, dir, stdin string, args ...string) (stdout, stderr string, code int) {
+	t.Helper()
 	t.Chdir(dir)
 	var outBuf, errBuf bytes.Buffer
 	root := newRootCmd()
+	root.SetIn(strings.NewReader(stdin))
 	root.SetOut(&outBuf)
 	root.SetErr(&errBuf)
 	root.SetArgs(args)
