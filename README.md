@@ -69,6 +69,7 @@ cdd version     # version, plus commit and date when the build has them
 cdd init        # Initialize the configuration
 cdd check       # Measure the project against the configuration
 cdd hook git    # Install a pre-commit hook that checks what is staged
+cdd hook claude # Install a Claude Code hook that checks every file the agent edits
 ```
 
 ### cdd init
@@ -217,6 +218,7 @@ describes it.
 | `--explain` | Lists every counted construct of each listed unit with its position and ICPs. |
 | `--format` | Renders the report as `console`, `json`, `xml` or `markdown`, ignoring the configured `reporter.format`. |
 | `--staged` | Analyzes the files staged in git instead of `[path...]`. Files no configured language claims, files `exclude` matches and files outside the configuration's directory are dropped; when nothing is left the command prints nothing and exits `0`. |
+| `--agent` | Reads the hook event of the named coding agent (`claude`) from stdin and analyzes the file it says was edited. A file outside the configuration's directory or one no language claims is silent; a unit over its limit puts the report on stderr and exits `2`, whatever the enforcement says. |
 | `--config` | Path to the configuration file. Default `cdd.config.yaml`. |
 
 `--staged` is what the hook of [`cdd hook git`](#cdd-hook-git) runs. It
@@ -233,6 +235,7 @@ their violations and say they are not enforced.
 | `0` | No unit is over its limit, or the enforcement only reports them. |
 | `1` | A unit is over its limit while `block_on_ci` is true and `legacy_mode` is `strict_all`. |
 | `2` | The timeout elapsed. The report printed first covers the files analyzed in time. |
+| `2` | With `--agent`, a unit of the edited file is over its limit; the report is on stderr for the agent. |
 | `1` | Usage error, missing configuration file, or a configuration that fails validation. |
 
 ### cdd hook git
@@ -278,6 +281,50 @@ configuration.
 Exit `0` after an install, update or removal; exit `1` outside a git
 repository, without a configuration file, or when the existing hook cannot
 take the block.
+
+### cdd hook claude
+
+`hook claude` writes a `PostToolUse` entry into the project's
+`.claude/settings.json` that runs `cdd check --agent claude` after every
+file Claude Code edits or writes. When a unit of that file is over its
+limit, the report is shown to the agent as something to fix, before it
+moves on. The hook is a reviewer, not a gate: it reports whatever the
+enforcement says, so a `measure_only` project gets the feedback too, while
+commits and CI keep their own rules.
+
+```
+$ cdd hook claude
+installed claude hook at .claude/settings.json
+```
+
+The project is the working directory, which is where Claude Code reads its
+settings and runs its hooks; no git repository is needed. The command needs
+a `cdd.config.yaml`; run `cdd init` first.
+
+- A missing settings file is created; other settings and other hooks in an
+  existing one are preserved.
+- Running the command again replaces the entry in place, which is how an
+  upgrade of `cdd` refreshes it.
+- A file that is not a JSON object, or a symlink a dotfiles manager owns,
+  is left untouched and reported with exit `1`.
+- A configuration away from the default location is baked in as
+  `--config`, relative to the project.
+
+What the agent sees is the console report on stderr with exit `2`, only
+when the edited file has a unit over its limit. An edit to a file no
+configured language claims, or to a file outside the configuration's
+directory, is silent. `cdd hook claude --remove` takes the entry out again
+and deletes the file when nothing else was in it.
+
+| Flag | What it does |
+| --- | --- |
+| `--local` | Writes `.claude/settings.local.json`, the personal, untracked file, instead. |
+| `--remove` | Removes the entry from the settings file instead of installing it. |
+| `--config` | Configuration the hook checks. Default `cdd.config.yaml`. |
+
+Exit `0` after an install, update or removal; exit `1` without a
+configuration file or when the existing settings file cannot take the
+entry.
 
 ## Language support
 

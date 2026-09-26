@@ -11,6 +11,16 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 ## [Unreleased]
 
+### Added
+
+- `cdd hook claude` installs a Claude Code `PostToolUse` hook into the
+  project's `.claude/settings.json` (`--local` for the personal file,
+  `--remove` to take it out), and `cdd check --agent claude` is what it
+  runs: it reads the event on stdin, analyzes the edited file and, when a
+  unit is over its limit, reports it on stderr with exit `2` so the agent
+  fixes it. Agents are strategies behind a registry in
+  `internal/agenthook`, one file each. (#30)
+
 ### Fixed
 
 - `cdd check --staged` no longer fails with `symlinked directory is not
