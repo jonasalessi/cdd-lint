@@ -117,7 +117,7 @@ func (s *settingsFile) events(path string) (map[string]any, error) {
 	}
 	events, ok := v.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("%s: %s is not an object", path, hooksKey)
+		return nil, fmt.Errorf("%s %w: %s is not an object", path, ErrForeignSettings, hooksKey)
 	}
 	return events, nil
 }
@@ -131,7 +131,7 @@ func entriesOf(events map[string]any, path string) ([]any, error) {
 	}
 	entries, ok := v.([]any)
 	if !ok {
-		return nil, fmt.Errorf("%s: %s.%s is not a list", path, hooksKey, postToolUse)
+		return nil, fmt.Errorf("%s %w: %s.%s is not a list", path, ErrForeignSettings, hooksKey, postToolUse)
 	}
 	return entries, nil
 }

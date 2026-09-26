@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/spf13/cobra"
 
+	"github.com/jonasalessi/cdd-lint/internal/agenthook"
 	"github.com/jonasalessi/cdd-lint/internal/git"
 	"github.com/jonasalessi/cdd-lint/internal/githook"
 )
@@ -20,9 +22,13 @@ func newHookCmd() *cobra.Command {
 		Use:   "hook",
 		Short: "Install hooks that run cdd where code changes",
 		Long: `hook installs cdd into the tools that see code change. Each subcommand
-targets one tool; "cdd hook git" is the git pre-commit hook.`,
+targets one tool: "cdd hook git" is the git pre-commit hook, and "cdd hook
+claude" the Claude Code hook that checks every file the agent edits.`,
 	}
 	c.AddCommand(newHookGitCmd())
+	for _, agent := range agenthook.All() {
+		c.AddCommand(newHookAgentCmd(agent))
+	}
 	return c
 }
 
@@ -150,9 +156,15 @@ func bakedConfig(top, path string) (string, error) {
 	return filepath.ToSlash(rel), nil
 }
 
+// refusals are the errors that mean a file could not take the hook.
+var refusals = []error{
+	githook.ErrForeignHook, githook.ErrSymlink,
+	agenthook.ErrForeignSettings, agenthook.ErrSymlink,
+}
+
 // untouched adds to a refusal that nothing was written.
 func untouched(err error) error {
-	if errors.Is(err, githook.ErrForeignHook) || errors.Is(err, githook.ErrSymlink) {
+	if slices.ContainsFunc(refusals, func(refusal error) bool { return errors.Is(err, refusal) }) {
 		return fmt.Errorf("%w; the file was left untouched", err)
 	}
 	return err

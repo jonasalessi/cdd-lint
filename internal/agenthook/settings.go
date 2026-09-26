@@ -10,9 +10,15 @@ import (
 	"path/filepath"
 )
 
-// ErrSymlink reports a settings path that is a symlink; a dotfiles manager
-// owns it.
-var ErrSymlink = errors.New("is a symlink; a dotfiles manager owns it")
+// The refusals that leave the settings file untouched.
+var (
+	// ErrSymlink reports a settings path that is a symlink; a dotfiles
+	// manager owns it.
+	ErrSymlink = errors.New("is a symlink; a dotfiles manager owns it")
+	// ErrForeignSettings reports a file that is not the JSON object the
+	// agent reads, or whose hook entries have another shape.
+	ErrForeignSettings = errors.New("cannot take the hook")
+)
 
 // newSettingsMode is the mode of a settings file the command creates.
 const newSettingsMode = 0o644
@@ -55,10 +61,10 @@ func parseObject(path string, data []byte) (map[string]any, error) {
 	dec.UseNumber()
 	var doc map[string]any
 	if err := dec.Decode(&doc); err != nil {
-		return nil, fmt.Errorf("%s: not a JSON object: %w", path, err)
+		return nil, fmt.Errorf("%s %w: not a JSON object: %w", path, ErrForeignSettings, err)
 	}
 	if doc == nil || dec.More() {
-		return nil, fmt.Errorf("%s: not a JSON object", path)
+		return nil, fmt.Errorf("%s %w: not a JSON object", path, ErrForeignSettings)
 	}
 	return doc, nil
 }

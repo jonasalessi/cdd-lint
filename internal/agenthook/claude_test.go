@@ -158,7 +158,7 @@ func TestClaudeInstallRefusesANonObject(t *testing.T) { // TC-K5
 			writeSettings(t, path, content)
 
 			_, err := claude{}.Install(path, testCommand)
-			require.Error(t, err)
+			require.ErrorIs(t, err, ErrForeignSettings)
 			assert.Contains(t, err.Error(), path)
 			assert.Equal(t, content, readSettingsFile(t, path))
 		})
@@ -171,7 +171,7 @@ func TestClaudeInstallRefusesAWrongEventType(t *testing.T) { // TC-K6
 	writeSettings(t, path, content)
 
 	_, err := claude{}.Install(path, testCommand)
-	require.Error(t, err)
+	require.ErrorIs(t, err, ErrForeignSettings)
 	assert.Contains(t, err.Error(), path)
 	assert.Contains(t, err.Error(), "PostToolUse is not a list")
 	assert.Equal(t, content, readSettingsFile(t, path))
