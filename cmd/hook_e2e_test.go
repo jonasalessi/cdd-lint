@@ -31,7 +31,7 @@ func buildCdd(t *testing.T) string {
 // what the hook sees; exec resolves the program itself through the
 // process's PATH, so the absolute path keeps the two apart.
 type e2eEnv struct {
-	dir, path, cdd, git string
+	dir, path, cdd, git, sh string
 }
 
 // run runs prog ("cdd" or "git") with args and returns its combined output
