@@ -11,6 +11,8 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-26
+
 ### Added
 
 - `cdd hook claude` installs a Claude Code `PostToolUse` hook into the
@@ -53,5 +55,6 @@ major is still 0). Each entry ends with the issue or PR it came from.
 - `cdd check` names a path that does not exist the way its other path errors
   do, instead of printing the raw `lstat` error. (#12)
 
-[Unreleased]: https://github.com/jonasalessi/cdd-lint/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jonasalessi/cdd-lint/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/jonasalessi/cdd-lint/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/jonasalessi/cdd-lint/releases/tag/v0.1.0
