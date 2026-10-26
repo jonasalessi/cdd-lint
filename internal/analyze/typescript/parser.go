@@ -56,8 +56,6 @@ const (
 	kindForInStatement
 	kindWhileStatement
 	kindDoStatement
-	kindOptionalChain
-	kindCallExpression
 	kindBinaryExpression
 	kindAugmentedAssignmentExpression
 	kindUnaryExpression
@@ -107,8 +105,6 @@ var kindNames = [kindCount]string{
 	kindForInStatement:                "for_in_statement",
 	kindWhileStatement:                "while_statement",
 	kindDoStatement:                   "do_statement",
-	kindOptionalChain:                 "optional_chain",
-	kindCallExpression:                "call_expression",
 	kindBinaryExpression:              "binary_expression",
 	kindAugmentedAssignmentExpression: "augmented_assignment_expression",
 	kindUnaryExpression:               "unary_expression",
@@ -153,13 +149,6 @@ const (
 	fieldKind = "kind"
 )
 
-// tokenOptionalCall is the `?.` of an optional call, `a?.()`. The grammar
-// spells it as a bare string literal inside call_expression -- the rule is
-// seq(field("function", ...), "?.", field("arguments", ...)) -- rather than
-// as the optional_chain node member and subscript accesses get, so it is an
-// anonymous token and only IdForNodeKind(..., false) resolves it.
-const tokenOptionalCall = "?."
-
 // fields holds the numeric field ids of one grammar.
 type fields struct {
 	operator, left, right, argument uint16
@@ -173,9 +162,6 @@ type grammar struct {
 	lang   *ts.Language
 	byID   []kind
 	fields fields
-	// optionalCallToken is the symbol id of the anonymous `?.` token, which
-	// has no entry in byID because that table only holds named kinds.
-	optionalCallToken uint16
 }
 
 // newGrammar resolves every kind and field the analyzer uses against lang.
@@ -199,7 +185,6 @@ func newGrammar(lang *ts.Language) *grammar {
 		kind:        lang.FieldIdForName(fieldKind),
 		body:        lang.FieldIdForName(fieldBody),
 	}
-	g.optionalCallToken = lang.IdForNodeKind(tokenOptionalCall, false)
 	return g
 }
 

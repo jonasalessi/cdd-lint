@@ -110,12 +110,6 @@ func TestKindsResolve(t *testing.T) {
 			require.NotZero(t, id, "node kind %q is unknown to the grammar", name)
 			require.Equal(t, k, g.byID[id])
 		}
-		// The `?.` of an optional call is an anonymous token, so it has no
-		// entry in byID and only the unnamed lookup resolves it.
-		require.NotZero(t, g.optionalCallToken,
-			"the anonymous %q token is unknown to the grammar", tokenOptionalCall)
-		require.Zero(t, g.lang.IdForNodeKind(tokenOptionalCall, true),
-			"%q must stay an anonymous token", tokenOptionalCall)
 	}
 }
 

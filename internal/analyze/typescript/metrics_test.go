@@ -56,34 +56,38 @@ func TestConditionClauses(t *testing.T) {
 	}
 }
 
-// TestOptionalChains pins one branch per `?.`, whichever of the two shapes
-// the grammar uses: the named optional_chain node of a member or subscript
-// access, or the anonymous `?.` token of an optional call.
+// TestOptionalChains pins that `?.` is not a branch, whichever of the two
+// shapes the grammar uses: the named optional_chain node of a member or
+// subscript access, or the anonymous `?.` token of an optional call (TC-O1).
 func TestOptionalChains(t *testing.T) {
-	cases := []struct {
-		expr string
-		want int
-	}{
-		{"a.b", 0},
-		{"a.b()", 0},
-		{"a?.b", 1},
-		{"a?.[0]", 1},
-		{"a?.b()", 1},
-		{"a?.()", 1},
-		{"a.b?.()", 1},
-		{"a?.b?.()", 2},
-		{"a?.[0]?.()", 2},
-		{"a?.b?.(1)?.[2]", 3},
-	}
-	for _, c := range cases {
-		t.Run(c.expr, func(t *testing.T) {
+	exprs := []string{"a?.b", "a?.[0]", "a?.b()", "a?.()", "a.b?.()", "a?.b?.(1)?.[2]"}
+	for _, expr := range exprs {
+		t.Run(expr, func(t *testing.T) {
 			an := newTestAnalyzer(t)
-			res, err := an.Analyze(context.Background(), "probe.ts", probe(c.expr))
+			res, err := an.Analyze(context.Background(), "probe.ts", probe(expr))
 			require.NoError(t, err)
 			require.Len(t, res.Units, 1)
-			requireCount(t, res.Units[0], config.MetricCodeBranch, c.want)
+			requireCount(t, res.Units[0], config.MetricCodeBranch, 0)
 		})
 	}
+}
+
+// TestIssue32 pins the function reported in #32: the import is one internal
+// coupling, `||` joins two clauses, and the `?.` adds nothing (TC-O3).
+func TestIssue32(t *testing.T) {
+	src := []byte(`import { ExternalApiError } from "./types";
+
+async function x(response: any) {
+  const errorData = await response.json();
+  throw new ExternalApiError(response.status, "failed", errorData?.message || JSON.stringify(errorData));
+}
+`)
+	res, err := newTestAnalyzer(t).Analyze(context.Background(), "x.ts", src)
+	require.NoError(t, err)
+	u := unitNamed(t, res, "x")
+	requireCount(t, u, config.MetricInternalCoupling, 1)
+	requireCount(t, u, config.MetricCondition, 2)
+	requireCount(t, u, config.MetricCodeBranch, 0)
 }
 
 // TestLoopBindings pins the `for…of` / `for…in` rule on its own: the loop
@@ -128,8 +132,8 @@ func TestMetrics(t *testing.T) {
 		metric  config.MetricID
 		want    int
 	}{
-		{"branches", "branches.ts", "branches", config.MetricCodeBranch, 14},
-		{"optional calls", "branches.ts", "optionalCalls", config.MetricCodeBranch, 9},
+		{"branches", "branches.ts", "branches", config.MetricCodeBranch, 11},
+		{"optional calls", "branches.ts", "optionalCalls", config.MetricCodeBranch, 0},
 		{"conditions", "conditions.ts", "conditions", config.MetricCondition, 32},
 		{"conditions branch only once", "conditions.ts", "conditions", config.MetricCodeBranch, 9},
 		{"exceptions", "exceptions.ts", "exceptions", config.MetricExceptionHandling, 5},
