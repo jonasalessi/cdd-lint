@@ -26,7 +26,7 @@ func TestSpec(t *testing.T) {
 		NotApplicable:   nil,
 		DefaultExcludes: []string{"**/src/test/**", "**/build/**", "**/target/**"},
 		Descriptions: map[config.MetricID]string{
-			config.MetricCodeBranch:     "if/when, loops, safe calls (?.)",
+			config.MetricCodeBranch:     "if/when, loops",
 			config.MetricCondition:      "&&, || and ?: clauses",
 			config.MetricStdlibCoupling: "kotlin.* and JDK types",
 			config.MetricInheritance:    ": Base() / : Iface, per level",
@@ -49,7 +49,7 @@ func TestSpecIsSafeToMutate(t *testing.T) {
 	second := Spec()
 	assert.Equal(t, []string{".kt"}, second.Extensions)
 	assert.Equal(t, "**/src/test/**", second.DefaultExcludes[0])
-	assert.Equal(t, "if/when, loops, safe calls (?.)", second.Descriptions[config.MetricCodeBranch])
+	assert.Equal(t, "if/when, loops", second.Descriptions[config.MetricCodeBranch])
 }
 
 // TestDetectPackagesSkipsJavaFiles (TC-S3): the java source under

@@ -54,7 +54,7 @@ metrics:
     #   internal_coupling: 0.5  # merged over the ".*" weights above
   kotlin:
     ".*":
-      code_branch: 1.0        # if/when, loops, safe calls (?.)
+      code_branch: 1.0        # if/when, loops
       condition: 1.0          # &&, || and ?: clauses
       exception_handling: 1.0 # try / catch / finally blocks
       internal_coupling: 1.0  # references to project packages

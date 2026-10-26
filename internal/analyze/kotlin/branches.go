@@ -11,9 +11,10 @@ import (
 //
 // An `if` is one branch and its `else` another, unless that `else` opens
 // another `if`, which charges itself (FR-10). A `when` entry is one branch
-// however many values its condition lists; the `else` entry is none. Every
-// `?.` short-circuits and is one branch; `!!` asserts and is none. `try`,
-// `return`, `break`, `continue` and `throw` are not branches.
+// however many values its condition lists; the `else` entry is none. A
+// `?.` only guards one access against null and `!!` asserts, so neither is
+// a branch, and neither are `try`, `return`, `break`, `continue` and
+// `throw`.
 type controlFlow struct {
 	g          *grammar
 	l          *ledger
@@ -41,8 +42,6 @@ func (f *controlFlow) count(k kind, n *ts.Node) bool {
 		f.countLoopBinding(n)
 	case kindWhileStatement, kindDoWhileStatement:
 		f.l.charge(config.MetricCodeBranch, n)
-	case kindNavigationExpression:
-		f.countSafeCall(n)
 	case kindBinaryExpression:
 		f.conditions.count(n)
 	case kindTryExpression:
@@ -112,15 +111,4 @@ func (f *controlFlow) nextCode(n *ts.Node) *ts.Node {
 		}
 	}
 	return nil
-}
-
-// countSafeCall charges the `?.` of a navigation expression. The grammar
-// gives it no node of its own -- navigation_expression holds either the
-// bare `.` or the bare `?.` token between the receiver and the member -- so
-// the token is found by symbol id among the direct children. A plain `.`
-// is not a branch.
-func (f *controlFlow) countSafeCall(n *ts.Node) {
-	if tok := findToken(n, f.g.tokens.safeCall); tok != nil {
-		f.l.charge(config.MetricCodeBranch, tok)
-	}
 }

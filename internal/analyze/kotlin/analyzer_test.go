@@ -56,12 +56,11 @@ func TestFieldsResolve(t *testing.T) {
 func TestTokensResolve(t *testing.T) {
 	g := sharedGrammar()
 	for _, name := range []string{
-		tokenSafeCall, tokenStar, tokenElse, tokenVal, tokenVar, tokenInterface, tokenEnum, tokenAssign,
+		tokenStar, tokenElse, tokenVal, tokenVar, tokenInterface, tokenEnum, tokenAssign,
 	} {
 		require.NotZero(t, g.lang.IdForNodeKind(name, false), "anonymous token %q is unknown", name)
 		require.Zero(t, g.lang.IdForNodeKind(name, true), "%q must stay an anonymous token", name)
 	}
-	require.NotZero(t, g.tokens.safeCall)
 	require.NotZero(t, g.tokens.star)
 	require.NotZero(t, g.tokens.elseKeyword)
 	require.NotZero(t, g.tokens.val)

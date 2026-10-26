@@ -29,7 +29,7 @@ func Spec() config.LanguageSpec {
 		Extensions:      slices.Clone(extensions[:]),
 		DefaultExcludes: []string{"**/src/test/**", "**/build/**", "**/target/**"},
 		Descriptions: maps.Clone(map[config.MetricID]string{
-			config.MetricCodeBranch:     "if/when, loops, safe calls (?.)",
+			config.MetricCodeBranch:     "if/when, loops",
 			config.MetricCondition:      "&&, || and ?: clauses",
 			config.MetricStdlibCoupling: "kotlin.* and JDK types",
 			config.MetricInheritance:    ": Base() / : Iface, per level",

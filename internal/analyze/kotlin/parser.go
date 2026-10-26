@@ -47,7 +47,6 @@ const (
 	kindForStatement
 	kindWhileStatement
 	kindDoWhileStatement
-	kindNavigationExpression
 	kindBinaryExpression
 	kindUnaryExpression
 	kindParenthesizedExpression
@@ -92,7 +91,6 @@ var kindNames = [kindCount]string{
 	kindForStatement:             "for_statement",
 	kindWhileStatement:           "while_statement",
 	kindDoWhileStatement:         "do_while_statement",
-	kindNavigationExpression:     "navigation_expression",
 	kindBinaryExpression:         "binary_expression",
 	kindUnaryExpression:          "unary_expression",
 	kindParenthesizedExpression:  "parenthesized_expression",
@@ -123,7 +121,6 @@ const (
 // None of them has a named node of its own, so only
 // IdForNodeKind(name, false) resolves them.
 const (
-	tokenSafeCall  = "?."
 	tokenStar      = "*"
 	tokenElse      = "else"
 	tokenVal       = "val"
@@ -143,10 +140,10 @@ type fields struct {
 // tokens holds the symbol ids of the anonymous tokens, which have no entry
 // in byID because that table only holds named kinds.
 type tokens struct {
-	safeCall, star, elseKeyword uint16
-	val, variable               uint16
-	interfaceKeyword, enum      uint16
-	assign                      uint16
+	star, elseKeyword      uint16
+	val, variable          uint16
+	interfaceKeyword, enum uint16
+	assign                 uint16
 }
 
 // grammar is the Kotlin parse table plus the symbol, field and token ids
@@ -177,7 +174,6 @@ func newGrammar(lang *ts.Language) *grammar {
 		argument:  lang.FieldIdForName(fieldArgument),
 	}
 	g.tokens = tokens{
-		safeCall:         lang.IdForNodeKind(tokenSafeCall, false),
 		star:             lang.IdForNodeKind(tokenStar, false),
 		elseKeyword:      lang.IdForNodeKind(tokenElse, false),
 		val:              lang.IdForNodeKind(tokenVal, false),

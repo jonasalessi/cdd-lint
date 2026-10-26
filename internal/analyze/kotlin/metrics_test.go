@@ -34,13 +34,13 @@ func TestBranches(t *testing.T) {
 	}{
 		{"describe", 2, 0},    // TC-B4: `2, 3 ->` is one entry; `else` is none
 		{"chain", 4, 0},       // TC-B3: three ifs and the final else, not six
-		{"safe", 2, 2},        // TC-B7: two `?.`, two clauses of `?:`
+		{"safe", 0, 2},        // TC-O5: `?.` is no branch, two clauses of `?:`
 		{"loops", 4, 0},       // TC-B11: for, for, while, do…while; `!!` is none
 		{"subjectless", 2, 0}, // TC-B5: `a > 1` is a comparison, not a clause
 		{"Holder", 2, 0},      // TC-B6: `when` as a body and inside a lambda
-		{"deep", 3, 0},        // TC-B8: `a?.b?.c?.d`
+		{"deep", 0, 0},        // TC-O6: `a?.b?.c?.d`
 		{"plain", 0, 0},       // TC-B8: `.` never counts
-		{"let", 1, 0},         // TC-B9
+		{"let", 0, 0},         // TC-O6
 		{"bang", 0, 0},        // TC-B10
 		{"guardedIf", 2, 2},   // TC-B14
 		{"elvisReturn", 0, 2}, // TC-B15: `return` is not a branch
