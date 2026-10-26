@@ -16,6 +16,10 @@ major is still 0). Each entry ends with the issue or PR it came from.
 - Building from source needs Go 1.26 or newer, raised from 1.25 because
   `golang.org/x/sync` v0.24.0, `golang.org/x/term` v0.47.0 and
   `golang.org/x/sys` v0.49.0 require it. (#34, #35)
+- `?.` no longer counts as a `code_branch` in TypeScript and Kotlin.
+  `docs/cdd.md` counts `if`/`else`, `switch`, ternaries and loops, and a
+  `?.` only guards one access against null, so null-safe code scores
+  lower. (#32)
 
 ## [0.2.0] - 2026-09-26
 

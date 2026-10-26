@@ -16,7 +16,7 @@ Only `.ts` and `.tsx` files are read.
 
 | Metric | What counts |
 | --- | --- |
-| `code_branch` | `if` and a plain `else`, an `else if` charging itself rather than its parent; each `case` of a `switch`, while `default` is free; each ternary; each loop; every `?.`, whether it reads a member, indexes or calls |
+| `code_branch` | `if` and a plain `else`, an `else if` charging itself rather than its parent; each `case` of a `switch`, while `default` is free; each ternary; each loop. `?.` counts nothing, whether it reads a member, indexes or calls |
 | `condition` | `&&`, `\|\|` and `??`, one per clause, flattened through parentheses and `!`, in any expression and not only inside a branch, so `a \|\| b` as a fallback value is 2. `&&=`, `\|\|=` and `??=` count their left-hand side as one more clause |
 | `exception_handling` | a `try` block, each `catch` and a `finally`, one each |
 | `inheritance` | every parent an `extends` or `implements` clause lists, one each |
@@ -47,7 +47,7 @@ included, bills to it.
 
 | Metric | What counts |
 | --- | --- |
-| `code_branch` | `if`, each `when` arm with a condition, every `?.`, every loop |
+| `code_branch` | `if`, each `when` arm with a condition, every loop. `?.` and `!!` count nothing |
 | `condition` | `&&`, `\|\|` and `?:`, one per clause |
 | `exception_handling` | a `try` block, each `catch` and a `finally`, one each |
 | `inheritance` | every `: Base()` or `: Iface`, one level each |
