@@ -37,7 +37,7 @@ somewhere between 20 and 40, and comes down as the code improves.
 go install github.com/jonasalessi/cdd-lint@latest
 ```
 
-That build needs Go 1.25 or newer and a C compiler. The TypeScript, Kotlin
+That build needs Go 1.26 or newer and a C compiler. The TypeScript, Kotlin
 and Java analyzers embed Tree-sitter through cgo, so you need
 `CGO_ENABLED=1` and a working toolchain:
 
