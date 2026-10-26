@@ -49,8 +49,7 @@ func Execute() int {
 
 func execute(c *cobra.Command, stderr io.Writer) int {
 	if err := c.Execute(); err != nil {
-		var ec exitCodeError
-		if errors.As(err, &ec) {
+		if ec, ok := errors.AsType[exitCodeError](err); ok {
 			return ec.code
 		}
 		fmt.Fprintf(stderr, "cdd: %v\n", err)
