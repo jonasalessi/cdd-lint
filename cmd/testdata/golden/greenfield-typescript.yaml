@@ -44,7 +44,7 @@ project_type: greenfield
 metrics:
   typescript:
     ".*":
-      code_branch: 1.0        # if/else, switch, ternary, loops and ?.
+      code_branch: 1.0        # if/else, switch, ternary, loops
       condition: 1.0          # &&, || and ?? clauses
       exception_handling: 1.0 # try / catch / finally blocks
       internal_coupling: 1.0  # references to project modules

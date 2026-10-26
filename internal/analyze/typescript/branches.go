@@ -9,12 +9,8 @@ import (
 
 // controlFlow charges the branch, condition and exception metrics.
 //
-// Every `?.` is one branch, because every `?.` short-circuits. The grammar
-// spells it two different ways: a member access (`a?.b`) and a subscript
-// access (`a?.[0]`) carry a named optional_chain node, charged wherever it
-// appears; an optional call (`a?.()`) carries the bare anonymous token
-// instead, charged by countOptionalCall. The two never overlap, so
-// `o?.b?.(1)?.[2]` is 3: the `?.b`, the `?.(` and the `?.[2]`.
+// A `?.` is not a branch: docs/cdd.md counts `if`/`else`, `switch`,
+// ternaries and loops, and a `?.` only guards one access against null.
 type controlFlow struct {
 	g          *grammar
 	l          *ledger
@@ -31,13 +27,11 @@ func newControlFlow(g *grammar, src []byte, l *ledger) *controlFlow {
 func (f *controlFlow) count(k kind, n *ts.Node) bool {
 	switch k {
 	case kindIfStatement, kindSwitchCase, kindTernaryExpression, kindForStatement,
-		kindWhileStatement, kindDoStatement, kindOptionalChain:
+		kindWhileStatement, kindDoStatement:
 		f.l.charge(config.MetricCodeBranch, n, 1)
 	case kindForInStatement:
 		f.l.charge(config.MetricCodeBranch, n, 1)
 		f.countLoopBinding(n)
-	case kindCallExpression:
-		f.countOptionalCall(n)
 	case kindElseClause:
 		f.countElse(n)
 	case kindTryStatement:
@@ -61,20 +55,6 @@ func (f *controlFlow) countTryBody(n *ts.Node) {
 		body = n
 	}
 	f.l.charge(config.MetricExceptionHandling, body, 1)
-}
-
-// countOptionalCall charges the `?.` of an optional call. The grammar gives
-// it no node of its own -- call_expression holds the bare anonymous `?.`
-// token between the function and the arguments -- so the token is found by
-// symbol id among the direct children rather than by kind or by field.
-// A call has at most one, so the scan stops at the first.
-func (f *controlFlow) countOptionalCall(n *ts.Node) {
-	for i := uint(0); i < n.ChildCount(); i++ {
-		if child := n.Child(i); child != nil && child.KindId() == f.g.optionalCallToken {
-			f.l.charge(config.MetricCodeBranch, child, 1)
-			return
-		}
-	}
 }
 
 // countLoopBinding charges the binding of a `for…in` or `for…of` loop as one

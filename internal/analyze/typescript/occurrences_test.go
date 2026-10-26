@@ -110,18 +110,6 @@ func TestOccurrenceRanges(t *testing.T) {
 			want: occurrenceAt{config.MetricCodeBranch, 6, 10, 12, 4, 1},
 		},
 		{
-			name: "an optional member access charges its `?.` token",
-			// `  const shallow = o?.a;` on line 50: `?.` spans columns 20-21.
-			fixture: "branches.ts", unit: "branches",
-			want: occurrenceAt{config.MetricCodeBranch, 50, 20, 50, 22, 1},
-		},
-		{
-			name: "an optional call charges the anonymous `?.` token",
-			// `  const a = f?.();` on line 64: `?.` spans columns 14-15.
-			fixture: "branches.ts", unit: "optionalCalls",
-			want: occurrenceAt{config.MetricCodeBranch, 64, 14, 64, 16, 1},
-		},
-		{
 			name: "a logical augmented assignment is one occurrence worth two",
 			// `  y ||= b;` on line 18 of conditions.ts.
 			fixture: "conditions.ts", unit: "conditions",

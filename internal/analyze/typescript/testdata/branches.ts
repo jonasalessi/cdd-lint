@@ -1,4 +1,4 @@
-// code_branch fixture. Expected total for `branches`: 14.
+// code_branch fixture. Expected total for `branches`: 11.
 export function branches(v: number, o: { a?: { b: number } }): number {
   if (v === 0) {
     // +1  if
@@ -47,24 +47,21 @@ export function branches(v: number, o: { a?: { b: number } }): number {
     break;
   } while (v > 5);
 
-  const shallow = o?.a; // +1  optional chain
-  const deep = o?.a?.b; // +2  two optional chains
+  const shallow = o?.a; // +0  an optional chain is not a branch
+  const deep = o?.a?.b; // +0
 
   return t + Number(shallow) + Number(deep);
 }
 
-// Expected total for `optionalCalls`: 9.
+// Expected total for `optionalCalls`: 0.
 //
-// Every `?.` short-circuits, so every `?.` is one branch. The grammar
-// spells it two ways: a member access (`a?.b`) and a subscript access
-// (`a?.[0]`) carry a named `optional_chain` node, while an optional call
-// (`a?.()`) carries the bare anonymous `?.` token of `call_expression`.
-// Both are counted, and they never overlap.
+// `?.` is not a branch in any of its shapes: a member access (`a?.b`), a
+// subscript access (`a?.[0]`) or an optional call (`a?.()`).
 export function optionalCalls(f: any, o: any): unknown {
-  const a = f?.(); // +1  the optional call
-  const b = o.f?.(); // +1  plain member access, then the optional call
-  const c = o?.f?.(); // +2  the `?.f` access and the optional call
-  const d = o?.[0]?.(); // +2  the `?.[0]` subscript and the optional call
-  const e = o?.b?.(1)?.[2]; // +3  `?.b`, the `?.(` call and `?.[2]`
+  const a = f?.(); // +0
+  const b = o.f?.(); // +0
+  const c = o?.f?.(); // +0
+  const d = o?.[0]?.(); // +0
+  const e = o?.b?.(1)?.[2]; // +0
   return [a, b, c, d, e];
 }

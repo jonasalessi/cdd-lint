@@ -45,6 +45,12 @@ func TestSpecCouplingDescriptions(t *testing.T) {
 	assert.Equal(t, "Node.js built-in modules (node:fs, path)", descriptions[config.MetricStdlibCoupling])
 }
 
+// TestSpecBranchDescription pins that the code_branch wording does not
+// list `?.` (TC-O4).
+func TestSpecBranchDescription(t *testing.T) {
+	assert.Equal(t, "if/else, switch, ternary, loops", Spec().Descriptions[config.MetricCodeBranch])
+}
+
 func TestDetectPackagesReadsTSConfigWithComments(t *testing.T) {
 	got, err := Spec().DetectPackages(t.Context(), filepath.Join("testdata", "aliases"))
 	require.NoError(t, err)
