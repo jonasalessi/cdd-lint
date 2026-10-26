@@ -139,7 +139,7 @@ first; with `--yes` or in CI it fails with `cdd.config.yaml exists; pass
 | Metric id | Weight | Languages | Counts |
 | --- | --- | --- | --- |
 | `code_branch` | 1.0 | all | `if`/`else`, `switch`/`when`, ternary, loops, and `?.` in Kotlin and TypeScript |
-| `condition` | 1.0 | all | `&&`, `\|\|`, `??` (TypeScript) and `?:` (Kotlin) clauses inside a branch |
+| `condition` | 1.0 | all | `&&`, `\|\|`, `??` (TypeScript) and `?:` (Kotlin) clauses, one per clause in any expression |
 | `exception_handling` | 1.0 | not Go | `try` / `catch` / `finally` blocks |
 | `internal_coupling` | 1.0 | all | References to types that belong to this project |
 | `external_coupling` | 0.5 | all | Framework and third-party types |
