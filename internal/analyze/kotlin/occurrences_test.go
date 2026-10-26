@@ -112,12 +112,10 @@ func TestBranchOccurrences(t *testing.T) {
 			},
 		},
 		{
-			name: "a safe call charges its token and elvis its clauses",
+			name: "a safe call charges nothing and elvis its clauses (TC-O7)",
 			src:  "fun s(v: String?): Int = v?.trim()?.length ?: 0\n",
 			want: []occurrenceAt{
 				{config.MetricCondition, 1, 26, 1, 43, 1},
-				{config.MetricCodeBranch, 1, 27, 1, 29, 1},
-				{config.MetricCodeBranch, 1, 35, 1, 37, 1},
 				{config.MetricCondition, 1, 47, 1, 48, 1},
 			},
 		},

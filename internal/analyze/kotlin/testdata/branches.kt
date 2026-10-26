@@ -8,7 +8,7 @@ fun chain(a: Boolean, b: Boolean, c: Boolean): Int =
     if (a) 1 else if (b) 2 else if (c) 3 else 4        // code_branch 4 (3 ifs + final else)
 
 fun safe(s: String?): Int = s?.trim()?.length ?: 0
-// code_branch 2 (two ?.), condition 2 (clauses of ?:), total 4
+// code_branch 0 (?. is not a branch), condition 2 (clauses of ?:), total 2
 
 fun loops(xs: List<Int>, m: Map<String, Int>) {
     for (x in xs) { }         // code_branch 1, local_variable 1
@@ -37,9 +37,9 @@ class Holder {
     }
 }                             // code_branch 2
 
-fun deep(a: A?) = a?.b?.c?.d  // code_branch 3
+fun deep(a: A?) = a?.b?.c?.d  // code_branch 0
 fun plain(a: A) = a.b.c.d     // code_branch 0
-fun let(x: String?) = x?.let { it.length }   // code_branch 1, lambda 1
+fun let(x: String?) = x?.let { it.length }   // code_branch 0, lambda 1
 fun bang(x: String?) {
     x!!.y                     // 0
     x!!                       // 0
