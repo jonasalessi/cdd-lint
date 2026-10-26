@@ -101,8 +101,7 @@ func (p *plan) symlinkedDirectory(rel string) ([]candidate, error) {
 // namedPathError reports a failed lookup by the path the caller named, the
 // way the other path errors do, instead of by the system call that failed.
 func namedPathError(rel string, err error) error {
-	var pathErr *fs.PathError
-	if errors.As(err, &pathErr) {
+	if pathErr, ok := errors.AsType[*fs.PathError](err); ok {
 		return fmt.Errorf("%s: %w", rel, pathErr.Err)
 	}
 	return err

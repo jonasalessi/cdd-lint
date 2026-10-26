@@ -84,8 +84,7 @@ func run(ctx context.Context, dir string, args ...string) (string, error) {
 // print: ErrNotRepository when git says so, otherwise git's own first
 // stderr line, or the exec error when git itself could not start.
 func classify(err error, stderr string) error {
-	var exitErr *exec.ExitError
-	if !errors.As(err, &exitErr) {
+	if _, ok := errors.AsType[*exec.ExitError](err); !ok { //nolint:errcheck // only whether git ran matters
 		return fmt.Errorf("git: %w", err)
 	}
 	if strings.Contains(stderr, "not a git repository") {
