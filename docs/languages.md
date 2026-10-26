@@ -14,6 +14,14 @@ in `internal_coupling.packages` does not change that.
 
 Only `.ts` and `.tsx` files are read.
 
+| Metric | What counts |
+| --- | --- |
+| `code_branch` | `if` and a plain `else`, an `else if` charging itself rather than its parent; each `case` of a `switch`, while `default` is free; each ternary; each loop; every `?.`, whether it reads a member, indexes or calls |
+| `condition` | `&&`, `\|\|` and `??`, one per clause, flattened through parentheses and `!`, in any expression and not only inside a branch, so `a \|\| b` as a fallback value is 2. `&&=`, `\|\|=` and `??=` count their left-hand side as one more clause |
+| `exception_handling` | a `try` block, each `catch` and a `finally`, one each |
+| `inheritance` | every parent an `extends` or `implements` clause lists, one each |
+| `lambda` | every arrow function and function expression that is not the unit's own body |
+
 An import is charged to `internal_coupling` when it is relative or sits under
 one of the configured module prefixes, to `stdlib_coupling` when it names a
 Node.js built-in, and to `external_coupling` otherwise. A built-in is any
