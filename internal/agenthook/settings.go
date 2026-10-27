@@ -8,6 +8,8 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/jonasalessi/cdd-lint/internal/atomicfile"
 )
 
 // The refusals that leave the settings file untouched.
@@ -34,6 +36,9 @@ type settingsFile struct {
 // settingsFile. Numbers are kept as written, so a round trip never turns
 // 30 into 3e+01.
 func readSettings(path string) (*settingsFile, error) {
+	if err := refuseLinkedDir(filepath.Dir(path)); err != nil {
+		return nil, err
+	}
 	info, err := os.Lstat(path)
 	if errors.Is(err, fs.ErrNotExist) {
 		return nil, nil
@@ -55,6 +60,23 @@ func readSettings(path string) (*settingsFile, error) {
 	return &settingsFile{doc: doc, mode: info.Mode().Perm()}, nil
 }
 
+// refuseLinkedDir refuses a settings directory that is a symlink, which
+// would carry the write out of the project. A missing one is created by
+// write.
+func refuseLinkedDir(dir string) error {
+	info, err := os.Lstat(dir)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if info.Mode()&fs.ModeSymlink != 0 {
+		return fmt.Errorf("%s %w", dir, ErrSymlink)
+	}
+	return nil
+}
+
 // parseObject decodes data as one JSON object.
 func parseObject(path string, data []byte) (map[string]any, error) {
 	dec := json.NewDecoder(bytes.NewReader(data))
@@ -69,10 +91,9 @@ func parseObject(path string, data []byte) (map[string]any, error) {
 	return doc, nil
 }
 
-// write stores the document atomically through a sibling .tmp and a
-// rename, creating the directory when missing. The encoding is what a
-// hand-edited settings file looks like: two-space indent, no HTML
-// escaping, a final newline.
+// write stores the document atomically, creating the directory when
+// missing. The encoding is what a hand-edited settings file looks like:
+// two-space indent, no HTML escaping, a final newline.
 func (s *settingsFile) write(path string) error {
 	var buf bytes.Buffer
 	enc := json.NewEncoder(&buf)
@@ -84,13 +105,5 @@ func (s *settingsFile) write(path string) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return err
 	}
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, buf.Bytes(), s.mode); err != nil {
-		return err
-	}
-	if err := os.Rename(tmp, path); err != nil {
-		_ = os.Remove(tmp)
-		return err
-	}
-	return nil
+	return atomicfile.Write(path, buf.Bytes(), s.mode)
 }

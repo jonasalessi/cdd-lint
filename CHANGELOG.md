@@ -21,6 +21,14 @@ major is still 0). Each entry ends with the issue or PR it came from.
   `?.` only guards one access against null, so null-safe code scores
   lower. (#32)
 
+### Fixed
+
+- `cdd init`, `cdd hook git` and `cdd hook claude` no longer write through
+  a symlink a repository plants at the scratch path next to the file they
+  replace, which let a cloned repository overwrite any file the user can
+  write. `cdd hook claude` also refuses a `.claude` directory that is a
+  symlink.
+
 ## [0.2.0] - 2026-09-26
 
 ### Added

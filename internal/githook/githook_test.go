@@ -135,6 +135,20 @@ func TestSymlinkIsRefused(t *testing.T) { // TC-H9
 	assert.Equal(t, "#!/bin/sh\nmanaged\n", read(t, target))
 }
 
+// A hooks directory that is tracked (core.hooksPath) can hold a symlink
+// where the scratch file goes; installing must not write through it.
+func TestInstallIgnoresAPlantedTempLink(t *testing.T) {
+	path := hookIn(t)
+	canary := filepath.Join(t.TempDir(), "canary")
+	write(t, canary, "canary", 0o644)
+	require.NoError(t, os.Symlink(canary, path+".tmp"))
+
+	require.NoError(t, Install(path, Block("")))
+
+	assert.Equal(t, "canary", read(t, canary))
+	assert.Contains(t, read(t, path), BeginMarker)
+}
+
 func TestRemoveMissingFile(t *testing.T) { // TC-H10
 	removed, err := Remove(hookIn(t))
 	require.NoError(t, err)
@@ -212,5 +226,7 @@ func TestFailedWriteLeavesNoTempFile(t *testing.T) { // TC-H16
 
 	require.Error(t, Install(path, Block("")))
 
-	assert.NoFileExists(t, path+".tmp")
+	left, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	assert.Empty(t, left, "no hook file and no temp file")
 }

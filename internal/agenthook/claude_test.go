@@ -191,6 +191,36 @@ func TestClaudeRefusesASymlink(t *testing.T) { // TC-K7
 	assert.Equal(t, "{}\n", readSettingsFile(t, target))
 }
 
+// A cloned repository can commit a symlink where the scratch file goes;
+// installing must not write through it.
+func TestClaudeInstallIgnoresAPlantedTempLink(t *testing.T) {
+	path := settingsPath(t)
+	require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
+	canary := filepath.Join(t.TempDir(), "canary")
+	require.NoError(t, os.WriteFile(canary, []byte("canary"), 0o644))
+	require.NoError(t, os.Symlink(canary, path+".tmp"))
+
+	_, err := claude{}.Install(path, testCommand)
+	require.NoError(t, err)
+	assert.Equal(t, "canary", readSettingsFile(t, canary))
+	assert.Contains(t, readSettingsFile(t, path), testCommand)
+}
+
+// A .claude directory that is a symlink would carry the write out of the
+// project, so it is refused like a symlinked settings file.
+func TestClaudeRefusesASymlinkedSettingsDirectory(t *testing.T) {
+	outside := t.TempDir()
+	project := t.TempDir()
+	require.NoError(t, os.Symlink(outside, filepath.Join(project, ".claude")))
+	path := filepath.Join(project, ".claude", "settings.json")
+
+	_, err := claude{}.Install(path, testCommand)
+	require.ErrorIs(t, err, ErrSymlink)
+	_, err = claude{}.Remove(path)
+	require.ErrorIs(t, err, ErrSymlink)
+	assert.NoFileExists(t, filepath.Join(outside, "settings.json"))
+}
+
 func TestClaudeRemoveWithoutAnEntry(t *testing.T) { // TC-K8
 	path := settingsPath(t)
 	removed, err := claude{}.Remove(path)
@@ -286,5 +316,7 @@ func TestClaudeFailedWriteLeavesNoTemp(t *testing.T) { // TC-K14
 
 	_, err := claude{}.Install(path, testCommand)
 	require.Error(t, err)
-	assert.NoFileExists(t, path+".tmp")
+	left, readErr := os.ReadDir(dir)
+	require.NoError(t, readErr)
+	assert.Empty(t, left, "no settings file and no temp file")
 }

@@ -30,7 +30,25 @@ func TestWriteCreatesLoadableFile(t *testing.T) {
 	require.NoError(t, err)
 	issues := config.Validate(loaded, testSpecs())
 	assert.False(t, issues.HasErrors(), "issues: %v", issues)
-	assert.NoFileExists(t, path+".tmp")
+	left, err := os.ReadDir(filepath.Dir(path))
+	require.NoError(t, err)
+	assert.Len(t, left, 1, "no temp file next to the configuration")
+}
+
+// A cloned repository can commit a symlink where the scratch file goes;
+// init must not write through it.
+func TestWriteIgnoresAPlantedTempLink(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "cdd.config.yaml")
+	canary := filepath.Join(t.TempDir(), "canary")
+	require.NoError(t, os.WriteFile(canary, []byte("canary"), 0o644))
+	require.NoError(t, os.Symlink(canary, path+".tmp"))
+
+	require.NoError(t, Write(builtConfig(t), testSpecs(), path, false))
+
+	data, err := os.ReadFile(canary)
+	require.NoError(t, err)
+	assert.Equal(t, "canary", string(data))
+	assert.FileExists(t, path)
 }
 
 func TestWriteRefusesExistingFile(t *testing.T) {
@@ -76,7 +94,9 @@ func TestWriteRenameFailureRemovesScratchFile(t *testing.T) {
 	require.NoError(t, os.Mkdir(path, 0o755))
 
 	assert.Error(t, Write(builtConfig(t), testSpecs(), path, true))
-	assert.NoFileExists(t, path+".tmp")
+	left, err := os.ReadDir(dir)
+	require.NoError(t, err)
+	assert.Len(t, left, 1, "only the directory that blocked the rename")
 }
 
 func TestWriteRenderErrorLeavesNothingBehind(t *testing.T) {
