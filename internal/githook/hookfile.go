@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/jonasalessi/cdd-lint/internal/atomicfile"
 )
 
 // ErrForeignHook reports a hook file whose shebang names something other
@@ -49,21 +51,9 @@ func readHook(path string) (*hookFile, error) {
 	return &hookFile{lines: strings.Split(string(data), "\n"), mode: info.Mode().Perm()}, nil
 }
 
-// write stores the file atomically through a sibling .tmp and a rename.
+// write stores the file atomically.
 func (h *hookFile) write(path string) error {
-	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, []byte(strings.Join(h.lines, "\n")), h.mode); err != nil {
-		return err
-	}
-	if err := os.Chmod(tmp, h.mode); err != nil {
-		_ = os.Remove(tmp)
-		return err
-	}
-	if err := os.Rename(tmp, path); err != nil {
-		_ = os.Remove(tmp)
-		return err
-	}
-	return nil
+	return atomicfile.Write(path, []byte(strings.Join(h.lines, "\n")), h.mode)
 }
 
 // hasShebang reports whether the first line is an interpreter line.
