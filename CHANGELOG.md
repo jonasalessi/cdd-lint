@@ -11,6 +11,18 @@ major is still 0). Each entry ends with the issue or PR it came from.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-27
+
+### Added
+
+- `cdd hook claude` installs a Claude Code `PostToolUse` hook into the
+  project's `.claude/settings.json` (`--local` for the personal file,
+  `--remove` to take it out), and `cdd check --agent claude` is what it
+  runs: it reads the event on stdin, analyzes the edited file and, when a
+  unit is over its limit, reports it on stderr with exit `2` so the agent
+  fixes it. Agents are strategies behind a registry in
+  `internal/agenthook`, one file each. (#30)
+
 ### Changed
 
 - Building from source needs Go 1.26 or newer, raised from 1.25 because
@@ -27,22 +39,7 @@ major is still 0). Each entry ends with the issue or PR it came from.
   a symlink a repository plants at the scratch path next to the file they
   replace, which let a cloned repository overwrite any file the user can
   write. `cdd hook claude` also refuses a `.claude` directory that is a
-  symlink.
-
-## [0.2.0] - 2026-09-26
-
-### Added
-
-- `cdd hook claude` installs a Claude Code `PostToolUse` hook into the
-  project's `.claude/settings.json` (`--local` for the personal file,
-  `--remove` to take it out), and `cdd check --agent claude` is what it
-  runs: it reads the event on stdin, analyzes the edited file and, when a
-  unit is over its limit, reports it on stderr with exit `2` so the agent
-  fixes it. Agents are strategies behind a registry in
-  `internal/agenthook`, one file each. (#30)
-
-### Fixed
-
+  symlink. (#39)
 - `cdd check --staged` no longer fails with `symlinked directory is not
   supported` when a symlink to a directory is staged; the link is skipped
   like any other file no language claims. (#29)
